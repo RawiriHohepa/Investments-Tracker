@@ -11,7 +11,8 @@ const puppeteerFunc = async () => {
   await page.keyboard.press('Enter');
 
   await page.waitForNavigation();
-  await page.waitForSelector('button');
+  await page.waitForSelector('h6');
+  await page.setViewport({ width: 1500, height: 1000 });
 
   await page.screenshot({path: 'example.png'});
 
