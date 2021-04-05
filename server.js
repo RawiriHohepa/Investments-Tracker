@@ -3,6 +3,7 @@ import path from 'path';
 require('dotenv').config();
 
 const simplicity = require('./simplicity/balances');
+const ird = require('./ird/studentLoan');
 
 // Setup Express
 const app = express();
@@ -18,10 +19,16 @@ app.get('/simplicity', async (req, res) => {
     res.json(await simplicity());
 });
 
+// When we make a GET request to '/ird', send back this JSON content.
+app.get('/ird', async (req, res) => {
+    res.json(await ird());
+});
+
 // When we make a GET request to '/api', send back this JSON content.
 app.get('/api', async (req, res) => {
     res.json({
         simplicity: await simplicity(),
+        ird: await ird(),
     });
 });
 
