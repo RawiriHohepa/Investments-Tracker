@@ -16,12 +16,7 @@ app.use(express.json());
 // When we make a GET request to '/api', send back this JSON content.
 // Uses the "name" query param e.g. http://localhost:3000/api?name=Clara
 app.get('/api', async (req, res) => {
-    await puppeteerFunc();
-
-    res.json({
-        greeting: 'Hello, world!',
-        name: req.query.name
-    });
+    res.json(await puppeteerFunc());
 });
 
 // Make the "public" folder available statically
