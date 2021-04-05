@@ -1,12 +1,12 @@
 const puppeteer = require('puppeteer');
 
-const simplicity = async () => {
+const balances = async () => {
   const browser = await puppeteer.launch({ executablePath: process.env.PUPPETEER_EXECUTABLE_PATH });
   const page = await browser.newPage();
 
   await login(page);
 
-  await page.screenshot({path: 'dashboard.png'});
+  await page.screenshot({ path: 'simplicity/dashboard.png' });
 
   const buttonTexts = await page.$$eval('button', buttons =>
     buttons.map(button =>
@@ -44,4 +44,4 @@ const login = async page => {
   await page.setViewport({ width: 1500, height: 1000 });
 }
 
-module.exports = simplicity;
+module.exports = balances;
