@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer');
 
-const puppeteerFunc = async () => {
+const simplicity = async () => {
   const browser = await puppeteer.launch({ executablePath: process.env.PUPPETEER_EXECUTABLE_PATH });
   const page = await browser.newPage();
 
@@ -44,4 +44,4 @@ const login = async page => {
   await page.setViewport({ width: 1500, height: 1000 });
 }
 
-module.exports = puppeteerFunc;
+module.exports = simplicity;

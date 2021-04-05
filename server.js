@@ -2,7 +2,7 @@ import express from 'express';
 import path from 'path';
 require('dotenv').config();
 
-const puppeteerFunc = require('./puppeteerFunc');
+const simplicity = require('./simplicity');
 
 // Setup Express
 const app = express();
@@ -13,10 +13,16 @@ app.use(express.json());
 
 // Setup our routes.
 
+// When we make a GET request to '/simplicity', send back this JSON content.
+app.get('/simplicity', async (req, res) => {
+    res.json(await simplicity());
+});
+
 // When we make a GET request to '/api', send back this JSON content.
-// Uses the "name" query param e.g. http://localhost:3000/api?name=Clara
 app.get('/api', async (req, res) => {
-    res.json(await puppeteerFunc());
+    res.json({
+        simplicity: await simplicity(),
+    });
 });
 
 // Make the "public" folder available statically
