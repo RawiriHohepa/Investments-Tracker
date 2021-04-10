@@ -77,35 +77,27 @@ const getAndParseMessages = async (auth) => {
   const gmail = google.gmail({ version: 'v1', auth });
   const res = await gmail.users.messages.list({
     userId: 'me',
+    q: 'subject:Login Passcode',
   });
 
-  const messages = res.data.messages;
-  const messagesFiltered = await Promise.all(messages.map(async (messageSnippet, index) => {
+  const messageSnippets = res.data.messages;
+  const messages = await Promise.all(messageSnippets.map(async (messageSnippet, index) => {
     const res = await gmail.users.messages.get({
       userId: 'me',
       id: messageSnippet.id,
     });
-    const message = res.data.payload;
 
-    const subject = message.headers.find(header => header.name === 'Subject').value;
-    if (subject !== 'Login Passcode') {
-      return;
-    }
-    return message;
+    return res.data.payload;
   }));
-  const investNowMessages = messagesFiltered.filter(message => !!message);
+  const message = messages[0];
 
-  const passcodes = investNowMessages.map(investNowMessage => {
-    const part = investNowMessage.parts.map(part => part.parts);
-    const part0 = part[0];
-    const part0_0 = part0[0];
-    const part0_0Message = part0_0.body.data;
-    const part0_0Decoded = new Buffer(part0_0Message, 'base64').toString();
-    const words = part0_0Decoded.replace('\r', "").replace('\n', "").split(' ');
-    return words[0];
-  })
-
-  return passcodes[0];
+  const parts = message.parts.map(part => part.parts);
+  const parts0 = parts[0];
+  const part0_0 = parts0[0];
+  const part0_0Message = part0_0.body.data;
+  const part0_0Decoded = new Buffer(part0_0Message, 'base64').toString();
+  const words = part0_0Decoded.replace('\r', "").replace('\n', "").split(' ');
+  return words[0];
 }
 
 module.exports = getPasscode;

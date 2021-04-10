@@ -35,20 +35,24 @@ const balances = async () => {
 };
 
 const login = async page => {
+  const emailId = '#input_0';
+  const passwordId = '#input_1';
+  const passcodeId = '#input_3';
+
   await page.goto(process.env.INVESTNOW_URL);
 
-  await page.type('#input_0', process.env.INVESTNOW_EMAIL);
-  await page.type('#input_1', process.env.INVESTNOW_PASSWORD);
+  await page.type(emailId, process.env.INVESTNOW_EMAIL);
+  await page.type(passwordId, process.env.INVESTNOW_PASSWORD);
   await page.keyboard.press('Enter');
 
-  await page.waitForSelector('#input_3');
+  await page.waitForSelector(passcodeId);
   
   const passcode = await getPasscode();
   await page.type('#input_3', passcode);
   await page.keyboard.press('Enter');
 
-  // await page.waitFor(5000);
-  await page.waitForNavigation();
+  await page.waitForSelector('td');
+  await page.setViewport({ height: 1000, width: 1000 });
 }
 
 module.exports = balances;
