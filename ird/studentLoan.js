@@ -31,19 +31,24 @@ const studentLoan = async () => {
 };
 
 const login = async page => {
+  const loginButtonClass = '.my-ir';
+  const usernameId = '#userid';
+  const passwordId = '#password';
+  const studentLoanButtonId = '#caption2_dc-h-2'
+
   await page.goto(process.env.IRD_URL);
 
-  await(await page.$('.my-ir')).click();
+  await(await page.$(loginButtonClass)).click();
   await page.waitForNavigation();
 
-  await page.type('#userid', process.env.IRD_USERNAME);
-  await page.type('#password', process.env.IRD_PASSWORD);
+  await page.type(usernameId, process.env.IRD_USERNAME);
+  await page.type(passwordId, process.env.IRD_PASSWORD);
   await page.keyboard.press('Enter');
 
   await page.waitForNavigation();
   await page.waitForSelector('.CaptionLinkText');
 
-  await(await page.$('#caption2_dc-h-2')).click();
+  await(await page.$(studentLoanButtonId)).click();
   await page.waitForNavigation();
 }
 

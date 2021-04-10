@@ -34,10 +34,13 @@ const balances = async () => {
 };
 
 const login = async page => {
+  const emailId = '#email';
+  const passwordId = '#password';
+
   await page.goto(process.env.SIMPLICITY_URL);
 
-  await page.type('#email', process.env.SIMPLICITY_EMAIL);
-  await page.type('#password', process.env.SIMPLICITY_PASSWORD);
+  await page.type(emailId, process.env.SIMPLICITY_EMAIL);
+  await page.type(passwordId, process.env.SIMPLICITY_PASSWORD);
   await page.keyboard.press('Enter');
 
   await page.waitForNavigation();

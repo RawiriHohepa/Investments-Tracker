@@ -48,11 +48,11 @@ const login = async page => {
   await page.waitForSelector(passcodeId);
   
   const passcode = await getPasscode();
-  await page.type('#input_3', passcode);
+  await page.type(passcodeId, passcode);
   await page.keyboard.press('Enter');
 
   await page.waitForSelector('td');
-  await page.setViewport({ height: 1000, width: 1000 });
+  await page.setViewport({ height: 1200, width: 1000 });
 }
 
 module.exports = balances;
