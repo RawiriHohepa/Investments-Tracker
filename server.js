@@ -42,6 +42,7 @@ app.get('/api', async (req, res) => {
     res.json({
         simplicity: await simplicity(),
         ird: await ird(),
+        investNow: await investNow(),
         kraken: await kraken(),
     });
 });
