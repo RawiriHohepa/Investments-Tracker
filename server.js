@@ -4,6 +4,7 @@ require('dotenv').config();
 
 const simplicity = require('./simplicity/balances');
 const ird = require('./ird/studentLoan');
+const investNow = require('./investNow/balances');
 const kraken = require('./kraken/balances');
 
 // Setup Express
@@ -23,6 +24,11 @@ app.get('/simplicity', async (req, res) => {
 // When we make a GET request to '/ird', send back this JSON content.
 app.get('/ird', async (req, res) => {
     res.json(await ird());
+});
+
+// When we make a GET request to '/investNow', send back this JSON content.
+app.get('/investNow', async (req, res) => {
+    res.json(await investNow());
 });
 
 // When we make a GET request to '/kraken', send back this JSON content.

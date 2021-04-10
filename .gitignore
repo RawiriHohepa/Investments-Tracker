@@ -4,3 +4,5 @@ node_modules
 .env
 
 */screenshot.png
+credentials.json
+token.json
