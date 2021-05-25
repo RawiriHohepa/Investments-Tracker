@@ -90,9 +90,14 @@ const filterPrices = prices => {
 };
 
 const filterAssetPairs = (coins, assetPairs) => {
-  const pairs = coins.map(coin =>
-    assetPairs[`${coin}USD`] || assetPairs[`${coin}ZUSD`]
-  );
+  const pairs = coins.map(coin => {
+    if (coin === "ZUSD") {
+      return assetPairs["USDCUSD"];
+    }
+    return Object.values(assetPairs).find(pair =>
+      pair.base === coin && pair.quote === "ZUSD"
+    );
+  });
   return pairs
     .filter(pair => pair)
     .map(pair => pair.altname);
@@ -102,7 +107,14 @@ const combineBalances = (amountsFiltered, pricesFiltered) => {
   const balances = amountsFiltered;
 
   balances.forEach(balance => {
-    const pricePair = pricesFiltered.find(price => price.pair.includes(balance.coin));
+    let pricePair;
+    if (balance.coin === "ZUSD") {
+      pricePair = pricesFiltered.find(price => price.pair === "USDCUSD");
+    } else {
+      pricePair = pricesFiltered.find(price =>
+        price.pair.includes(balance.coin.replace("X", ""))
+      );
+    }
     if (pricePair) {
       balance.balance = balance.amount * pricePair.price;
       balance.price = pricePair.price;
