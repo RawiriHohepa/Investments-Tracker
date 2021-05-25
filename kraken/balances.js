@@ -110,10 +110,10 @@ const combineBalances = (amountsFiltered, pricesFiltered) => {
     let pricePair;
     if (balance.coin === "ZUSD") {
       pricePair = pricesFiltered.find(price => price.pair === "USDCUSD");
+    } else if (balance.coin === "XXDG") {
+      pricePair = pricesFiltered.find(price => price.pair.includes("XDG"));
     } else {
-      pricePair = pricesFiltered.find(price =>
-        price.pair.includes(balance.coin.replace("X", ""))
-      );
+      pricePair = pricesFiltered.find(price => price.pair.includes(balance.coin));
     }
     if (pricePair) {
       balance.balance = balance.amount * pricePair.price;
