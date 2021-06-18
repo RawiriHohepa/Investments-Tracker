@@ -1,3 +1,4 @@
+export {};
 const puppeteer = require('puppeteer');
 const getPasscode = require('./getPasscode');
 

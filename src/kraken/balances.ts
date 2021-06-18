@@ -17,7 +17,7 @@ const amountsApi = async () => {
   const message = `nonce=${nonce}`;
   const signature = apiSign(process.env.KRAKEN_API_BALANCES_ENDPOINT, { nonce }, process.env.KRAKEN_PRIVATE_KEY, nonce);
 
-  const res = await axios.post(process.env.KRAKEN_API_URI + process.env.KRAKEN_API_BALANCES_ENDPOINT, message, {
+  const res = await axios.post("" + process.env.KRAKEN_API_URI + process.env.KRAKEN_API_BALANCES_ENDPOINT, message, {
     headers: {
       'API-Key': process.env.KRAKEN_API_KEY,
       'API-Sign': signature,
@@ -31,7 +31,7 @@ const pricesApi = async (coins) => {
   const assetPairs = await assetPairsApi();
   const assetPairsFiltered = filterAssetPairs(coins, assetPairs);
 
-  const res = await axios.get(process.env.KRAKEN_API_URI + process.env.KRAKEN_API_PRICES_ENDPOINT, {
+  const res = await axios.get("" + process.env.KRAKEN_API_URI + process.env.KRAKEN_API_PRICES_ENDPOINT, {
     params: {
       pair: assetPairsFiltered.join(','),
     }
@@ -41,7 +41,7 @@ const pricesApi = async (coins) => {
 }
 
 const assetPairsApi = async () => {
-  const res = await axios.get(process.env.KRAKEN_API_URI + process.env.KRAKEN_API_ASSET_PAIRS_ENDPOINT);
+  const res = await axios.get("" + process.env.KRAKEN_API_URI + process.env.KRAKEN_API_ASSET_PAIRS_ENDPOINT);
 
   return res.data.result;
 }
@@ -59,7 +59,7 @@ const apiSign = (path, request, secret, nonce) => {
 };
 
 const filterAmounts = amounts => {
-  const amountsFiltered = [];
+  const amountsFiltered: any = [];
 
   const keysFiltered = Object.keys(amounts).filter(key =>
     amounts[key].replace(".", "").replaceAll("0", "").length !== 0
@@ -79,7 +79,7 @@ const filterAmounts = amounts => {
 }
 
 const filterPrices = prices => {
-  const pricesFiltered = [];
+  const pricesFiltered: any = [];
 
   const keys = Object.keys(prices);
   keys.forEach(key => {
@@ -94,7 +94,7 @@ const filterAssetPairs = (coins, assetPairs) => {
     if (coin === "ZUSD" || coin === "USD") {
       return assetPairs["USDCUSD"];
     }
-    return Object.values(assetPairs).find(pair =>
+    return Object.values<any>(assetPairs).find(pair =>
       pair.base === coin && pair.quote === "ZUSD"
     );
   });

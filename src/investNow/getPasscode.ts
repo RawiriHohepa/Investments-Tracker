@@ -1,3 +1,4 @@
+export {};
 const fs = require('fs');
 const readline = require('readline');
 const { google } = require('googleapis');
@@ -43,7 +44,7 @@ const authorize = async () => {
  * @param {google.auth.OAuth2} oAuth2Client The OAuth2 client to get token for.
  * @param {getEventsCallback} callback The callback for the authorized client.
  */
-// FIXME doesn't work to set new token, must use googleapi.js
+// FIXME doesn't work to set new token, must use googleapi.ts
 const getNewToken = async (oAuth2Client) => {
   const authUrl = oAuth2Client.generateAuthUrl({
     access_type: 'offline',
@@ -89,7 +90,7 @@ const getAndParseMessages = async (auth) => {
 
     return res.data.payload;
   }));
-  const message = messages[0];
+  const message: any = messages[0];
 
   const parts = message.parts.map(part => part.parts);
   const parts0 = parts[0];
