@@ -1,7 +1,6 @@
 export {};
 import puppeteer, { Page } from 'puppeteer'
 const getPasscode = require('./getPasscode');
-import { InvestNow } from "../types";
 
 type InvestNowFund = {
   Name: string;
@@ -12,7 +11,7 @@ type InvestNowFund = {
   NZD: string;
 }
 
-const balances = async (): Promise<InvestNow> => {
+const balances = async () => {
   const browser = await puppeteer.launch({ executablePath: process.env.PUPPETEER_EXECUTABLE_PATH });
   const page = await browser.newPage();
 

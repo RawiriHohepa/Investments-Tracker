@@ -1,123 +1,114 @@
-import axios from 'axios'
-import crypto, {BinaryToTextEncoding} from 'crypto'
-import qs from 'qs'
+import {
+  AssetPair,
+  AssetPairArrayLike,
+  AssetPairPrice,
+  amountsApi,
+  assetPairsApi,
+  pricesApi, AmountsArrayLike, PriceArrayLike
+} from "./krakenApi";
+import { Kraken } from "../types";
+
+type Coin = {
+  coin: string;
+  type: "Staking" | "Spot";
+  amount: number;
+};
+
+type Price = {
+  pair: string;
+  price: number;
+};
 
 const balances = async () => {
-  const amounts = await amountsApi();
-  const amountsFiltered = filterAmounts(amounts);
+  const amountsResponse = await amountsApi();
+  const coins = filterAmounts(amountsResponse);
 
-  const prices = await pricesApi(amountsFiltered.map(amount => amount.coin));
-  const pricesFiltered = filterPrices(prices);
+  const coinNames = coins.map(amount => amount.coin);
+  const assetPairsResponse = await assetPairsApi();
+  const altNames = filterAssetPairs(coinNames, assetPairsResponse);
 
-  return combineBalances(amountsFiltered, pricesFiltered);
+  const altNamesJoined = altNames.join(',');
+  const pricesResponse = await pricesApi(altNamesJoined);
+  const prices = filterPrices(pricesResponse);
+
+  return combineBalances(coins, prices);
 };
 
-const amountsApi = async () => {
-  const nonce = new Date().getTime();
-  const message = `nonce=${nonce}`;
-  const signature = apiSign(process.env.KRAKEN_API_BALANCES_ENDPOINT, { nonce }, process.env.KRAKEN_PRIVATE_KEY, nonce);
+const filterAmounts = (amounts: AmountsArrayLike) => {
+  const amountsFiltered: Coin[] = [];
 
-  const res = await axios.post("" + process.env.KRAKEN_API_URI + process.env.KRAKEN_API_BALANCES_ENDPOINT, message, {
-    headers: {
-      'API-Key': process.env.KRAKEN_API_KEY,
-      'API-Sign': signature,
-    },
-  });
+  Object.keys(amounts).forEach(key => {
+    const amount = parseFloat(amounts[key]);
+    if (amount !== 0) {
+      const isStaking = key.split(".").length > 1;
+      const coinWithoutPrefix = key.split(".")[0];
 
-  return res.data.result;
-}
-
-const pricesApi = async (coins) => {
-  const assetPairs = await assetPairsApi();
-  const assetPairsFiltered = filterAssetPairs(coins, assetPairs);
-
-  const res = await axios.get("" + process.env.KRAKEN_API_URI + process.env.KRAKEN_API_PRICES_ENDPOINT, {
-    params: {
-      pair: assetPairsFiltered.join(','),
+      amountsFiltered.push({
+        coin: coinWithoutPrefix,
+        type: isStaking ? "Staking" : "Spot",
+        amount,
+      });
     }
-  });
-
-  return res.data.result;
-}
-
-const assetPairsApi = async () => {
-  const res = await axios.get("" + process.env.KRAKEN_API_URI + process.env.KRAKEN_API_ASSET_PAIRS_ENDPOINT);
-
-  return res.data.result;
-}
-
-// https://github.com/nothingisdead/npm-kraken-api
-const apiSign = (path, request, secret, nonce) => {
-  const message       = qs.stringify(request);
-  const secret_buffer = new Buffer(secret, 'base64');
-  const hash          = crypto.createHash('sha256');
-  const hmac          = crypto.createHmac('sha512', secret_buffer);
-  const hash_digest   = hash.update(nonce + message).digest(<BinaryToTextEncoding>'binary');
-  const hmac_digest   = hmac.update(path + hash_digest, 'binary').digest('base64');
-
-  return hmac_digest;
-};
-
-const filterAmounts = amounts => {
-  const amountsFiltered: any = [];
-
-  const keysFiltered = Object.keys(amounts).filter(key =>
-    amounts[key].replace(".", "").replaceAll("0", "").length !== 0
-  );
-  keysFiltered.forEach(key => {
-    const isStaking = key.split(".").length > 1;
-    const coinWithoutPrefix = key.split(".")[0];
-
-    amountsFiltered.push({
-      coin: coinWithoutPrefix,
-      type: isStaking ? "Staking" : "Spot",
-      amount: amounts[key],
-    });
   });
 
   return amountsFiltered;
 }
 
-const filterPrices = prices => {
-  const pricesFiltered: any = [];
+const filterAssetPairs = (coins: string[], assetPairs: AssetPairArrayLike) => {
+  const pairs: AssetPair[] = [];
 
-  const keys = Object.keys(prices);
-  keys.forEach(key => {
-    pricesFiltered.push({ pair: key, price: prices[key].c[0] })
+  coins.forEach(coin => {
+    if (coin === "ZUSD" || coin === "USD") {
+      // USD Fiat
+      pairs.push(assetPairs["USDCUSD"]);
+    } else {
+      // Anything else
+      const pair = Object.values(assetPairs).find(pair =>
+          pair.base === coin && pair.quote === "ZUSD"
+      );
+      if (pair) {
+        pairs.push(pair);
+      }
+    }
+  });
+
+  return pairs.map(pair => pair.altname);
+}
+
+const filterPrices = (prices: PriceArrayLike) => {
+  const pricesFiltered: Price[] = [];
+
+  Object.keys(prices).forEach(key => {
+    pricesFiltered.push({
+      pair: key,
+      price: parseFloat(prices[key].c[0]),
+    });
   });
 
   return pricesFiltered;
 };
 
-const filterAssetPairs = (coins, assetPairs) => {
-  const pairs = coins.map(coin => {
-    if (coin === "ZUSD" || coin === "USD") {
-      return assetPairs["USDCUSD"];
-    }
-    return Object.values<any>(assetPairs).find(pair =>
-      pair.base === coin && pair.quote === "ZUSD"
-    );
-  });
-  return pairs
-    .filter(pair => pair)
-    .map(pair => pair.altname);
-}
+const combineBalances = (coins: Coin[], prices: Price[]) => {
+  const balances: Kraken[] = [];
 
-const combineBalances = (amountsFiltered, pricesFiltered) => {
-  const balances = amountsFiltered;
-
-  balances.forEach(balance => {
-    let pricePair;
-    if (balance.coin === "ZUSD" || balance.coin === "USD") {
-      pricePair = pricesFiltered.find(price => price.pair === "USDCUSD");
-    } else if (balance.coin === "XXDG") {
-      pricePair = pricesFiltered.find(price => price.pair.includes("XDG"));
+  coins.forEach(coin => {
+    let price: Price | undefined;
+    if (coin.coin === "ZUSD" || coin.coin === "USD") {
+      // USD Fiat
+      price = prices.find(price => price.pair === "USDCUSD");
+    } else if (coin.coin === "XXDG") {
+      // Dogecoin
+      price = prices.find(price => price.pair.includes("XDG"));
     } else {
-      pricePair = pricesFiltered.find(price => price.pair.includes(balance.coin));
+      // Anything else
+      price = prices.find(price => price.pair.includes(coin.coin));
     }
-    if (pricePair) {
-      balance.balance = balance.amount * pricePair.price;
-      balance.price = pricePair.price;
+    if (price) {
+      balances.push({
+        ...coin,
+        balance: coin.amount * price.price,
+        price: price.price,
+      });
     }
   });
 
