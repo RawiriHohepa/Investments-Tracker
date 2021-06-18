@@ -1,6 +1,7 @@
-import puppeteer, { Page } from 'puppeteer'
+import puppeteer, { Page } from 'puppeteer';
+import { Ird } from "../types";
 
-const studentLoan = async () => {
+const studentLoan = async (): Promise<Ird> => {
   const browser = await puppeteer.launch({ executablePath: process.env.PUPPETEER_EXECUTABLE_PATH });
   const page = await browser.newPage();
 
@@ -17,12 +18,13 @@ const studentLoan = async () => {
       )
   ) as unknown as string[];
 
-  const valuesArray = texts
-    .filter((_, index) => index % 2 === 0); // Remove every second item to remove duplicates
-  valuesArray.splice(-1, 1); // Remove irrelevant item in last position
+  // Remove every second item to remove duplicates
+  const valuesArray = texts.filter((_, index) => index % 2 === 0);
+  // Remove irrelevant item in last position
+  valuesArray.splice(-1, 1);
 
   // For every two items, first is key and second is value
-  const valuesObject = {};
+  const valuesObject: Ird = {};
   valuesArray.map((value, index) => {
     if (index % 2 === 0) {
       valuesObject[value] = valuesArray[index + 1];
