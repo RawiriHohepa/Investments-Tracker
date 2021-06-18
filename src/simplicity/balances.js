@@ -7,7 +7,7 @@ const balances = async () => {
   await login(page);
 
   // FIXME For some reason this is needed for all three balances to be scraped successfully.
-  await page.screenshot({ path: 'simplicity/screenshot.png' });
+  await page.screenshot({ path: 'src/simplicity/screenshot.png' });
 
   const buttonTexts = await page.$$eval('button', buttons =>
     buttons.map(button =>

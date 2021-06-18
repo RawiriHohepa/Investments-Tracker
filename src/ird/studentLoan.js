@@ -6,7 +6,7 @@ const studentLoan = async () => {
 
   await login(page);
 
-  await page.screenshot({ path: 'ird/screenshot.png' });
+  await page.screenshot({ path: 'src/ird/screenshot.png' });
 
   const texts = await page.$$eval('.FGNVV', texts =>
     texts.map(text =>

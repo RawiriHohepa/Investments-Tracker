@@ -1,7 +1,7 @@
 # CS732 examples - Lecture 03 - Example 19 - Node.js and Express
 This project contains a simple node.js / Express server application.
 
-The main code is located in [server.js](./server.js). The key parts of the file are as follows:
+The main code is located in [index.js](./index.js). The key parts of the file are as follows:
 
 - Line 6 creates an Express server instance, which we'll configure before starting.
 
@@ -20,4 +20,4 @@ The main code is located in [server.js](./server.js). The key parts of the file 
 
 - Line 45 starts the server running on the given port. The given function will be called once the server has properly been started.
 
-In addition to the code in `server.js`, we can also see that [index.html](./public/index.html) contains links to the routes defined within, to allow us to easily test.
+In addition to the code in `index.js`, we can also see that [index.html](./public/index.html) contains links to the routes defined within, to allow us to easily test.

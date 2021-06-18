@@ -7,7 +7,7 @@ const balances = async () => {
 
   await login(page);
 
-  await page.screenshot({ path: 'investNow/screenshot.png' });
+  await page.screenshot({ path: 'src/investNow/screenshot.png' });
 
   const td = await page.$$eval('td', cells =>
     cells.map(cell =>
