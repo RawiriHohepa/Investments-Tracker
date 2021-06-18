@@ -6,6 +6,7 @@ import simplicity from './simplicity/balances';
 import ird from './ird/studentLoan';
 import investNow from './investNow/balances';
 import kraken from './kraken/balances';
+import nexo from './nexo/balances';
 
 // Setup Express
 const app = express();
@@ -33,8 +34,18 @@ app.get('/investNow', async (req, res) => {
 
 // When we make a GET request to '/kraken', send back this JSON content.
 app.get('/kraken', async (req, res) => {
-  // res.json(await kraken());
     res.json(await kraken());
+});
+
+// When we make a GET request to '/nexo', send back this JSON content.
+app.get('/nexo', async (req, res) => {
+    const { nsi } = req.query;
+    if (typeof nsi !== "string") {
+        res.sendStatus(400);
+        return;
+    }
+
+    res.json(await nexo(nsi));
 });
 
 // When we make a GET request to '/api', send back this JSON content.
@@ -43,7 +54,7 @@ app.get('/api', async (req, res) => {
         simplicity: await simplicity(),
         ird: await ird(),
         investNow: await investNow(),
-        kraken: await kraken(),
+        kraken: await kraken()
     });
 });
 
