@@ -1,5 +1,5 @@
 export {};
-const puppeteer = require('puppeteer');
+import puppeteer from 'puppeteer'
 const getPasscode = require('./getPasscode');
 
 const balances = async () => {

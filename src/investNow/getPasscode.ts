@@ -1,6 +1,6 @@
 export {};
-const fs = require('fs');
-const readline = require('readline');
+import fs from 'fs'
+import readline from 'readline'
 const { google } = require('googleapis');
 
 // If modifying these scopes, delete token.json.
@@ -29,7 +29,7 @@ const authorize = async () => {
 
   // Check if we have previously stored a token.
   try {
-    const token = await fs.readFileSync(TOKEN_PATH);
+    const token = fs.readFileSync(TOKEN_PATH).toString();
 
     await oAuth2Client.setCredentials(JSON.parse(token));
     return oAuth2Client;

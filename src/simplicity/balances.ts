@@ -1,7 +1,8 @@
 export {};
-const puppeteer = require('puppeteer');
+import puppeteer from 'puppeteer'
+import { Simplicity } from '../types';
 
-const balances = async () => {
+const balances = async (): Promise<Simplicity> => {
   const browser = await puppeteer.launch({ executablePath: process.env.PUPPETEER_EXECUTABLE_PATH });
   const page = await browser.newPage();
 
@@ -10,13 +11,16 @@ const balances = async () => {
   // FIXME For some reason this is needed for all three balances to be scraped successfully.
   await page.screenshot({ path: 'src/simplicity/screenshot.png' });
 
-  const buttonTexts = await page.$$eval('button', buttons =>
-    buttons.map(button =>
-      button.textContent
-    )
-  );
+  const buttonTexts = await page.$$eval(
+      'button',
+      buttons => (
+        buttons.map(button =>
+          button.textContent
+        )
+      )
+  ) as unknown as string[];
 
-  const values = [...buttonTexts]
+  const values = buttonTexts
     .slice(2) // Remove unnecessary buttons
     .map(value =>
       value

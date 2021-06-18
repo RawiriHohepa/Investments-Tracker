@@ -1,4 +1,4 @@
-const puppeteer = require('puppeteer');
+import puppeteer from 'puppeteer'
 
 const studentLoan = async () => {
   const browser = await puppeteer.launch({ executablePath: process.env.PUPPETEER_EXECUTABLE_PATH });
@@ -8,13 +8,16 @@ const studentLoan = async () => {
 
   await page.screenshot({ path: 'src/ird/screenshot.png' });
 
-  const texts = await page.$$eval('.FGNVV', texts =>
-    texts.map(text =>
-      text.textContent
-    )
-  );
+  const texts = await page.$$eval(
+      '.FGNVV',
+      texts => (
+          texts.map(text =>
+              text.textContent
+          )
+      )
+  ) as unknown as string[];
 
-  const valuesArray = [...texts]
+  const valuesArray = texts
     .filter((_, index) => index % 2 === 0); // Remove every second item to remove duplicates
   valuesArray.splice(-1, 1); // Remove irrelevant item in last position
 

@@ -1,5 +1,5 @@
-const fs = require('fs');
-const readline = require('readline');
+import fs from 'fs'
+import readline from 'readline'
 const {google} = require('googleapis');
 
 // If modifying these scopes, delete token.json.
