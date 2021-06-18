@@ -50,11 +50,18 @@ app.get('/nexo', async (req, res) => {
 
 // When we make a GET request to '/api', send back this JSON content.
 app.get('/api', async (req, res) => {
+    const { nexo_nsi } = req.query;
+    if (!!nexo_nsi && typeof nexo_nsi !== "string") {
+        res.sendStatus(400);
+        return;
+    }
+
     res.json({
         simplicity: await simplicity(),
         ird: await ird(),
         investNow: await investNow(),
-        kraken: await kraken()
+        kraken: await kraken(),
+        nexo: nexo_nsi ? await nexo(nexo_nsi) : undefined,
     });
 });
 
