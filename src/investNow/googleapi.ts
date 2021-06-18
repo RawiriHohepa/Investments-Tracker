@@ -14,7 +14,7 @@ const googleapi = () => {
   fs.readFile('credentials.json', (err, content) => {
     if (err) return console.log('Error loading client secret file:', err);
     // Authorize a client with credentials, then call the Gmail API.
-    authorize(JSON.parse(content), listLabels);
+    authorize(JSON.parse(content.toString()), listLabels);
   });
 }
 
@@ -32,7 +32,7 @@ function authorize(credentials, callback) {
   // Check if we have previously stored a token.
   fs.readFile(TOKEN_PATH, (err, token) => {
     if (err) return getNewToken(oAuth2Client, callback);
-    oAuth2Client.setCredentials(JSON.parse(token));
+    oAuth2Client.setCredentials(JSON.parse(token.toString()));
     callback(oAuth2Client);
   });
 }

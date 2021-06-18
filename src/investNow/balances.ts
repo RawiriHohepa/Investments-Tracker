@@ -1,5 +1,5 @@
 export {};
-import puppeteer from 'puppeteer'
+import puppeteer, { Page } from 'puppeteer'
 const getPasscode = require('./getPasscode');
 
 const balances = async () => {
@@ -39,16 +39,16 @@ const balances = async () => {
   return balances;
 };
 
-const login = async page => {
+const login = async (page: Page) => {
   const emailId = '#input_0';
   const passwordId = '#input_1';
   const passcodeId = '#input_3';
 
-  await page.goto(process.env.INVESTNOW_URL);
+  await page.goto("" + process.env.INVESTNOW_URL);
   await page.waitForSelector('input');
 
-  await page.type(emailId, process.env.INVESTNOW_EMAIL);
-  await page.type(passwordId, process.env.INVESTNOW_PASSWORD);
+  await page.type(emailId, "" + process.env.INVESTNOW_EMAIL);
+  await page.type(passwordId, "" + process.env.INVESTNOW_PASSWORD);
   await page.keyboard.press('Enter');
 
   await page.waitForSelector(passcodeId);

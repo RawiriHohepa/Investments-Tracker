@@ -1,5 +1,5 @@
 export {};
-import puppeteer from 'puppeteer'
+import puppeteer, { Page } from 'puppeteer'
 import { Simplicity } from '../types';
 
 const balances = async (): Promise<Simplicity> => {
@@ -38,14 +38,14 @@ const balances = async (): Promise<Simplicity> => {
   return balances;
 };
 
-const login = async page => {
+const login = async (page: Page) => {
   const emailId = '#email';
   const passwordId = '#password';
 
-  await page.goto(process.env.SIMPLICITY_URL);
+  await page.goto("" + process.env.SIMPLICITY_URL);
 
-  await page.type(emailId, process.env.SIMPLICITY_EMAIL);
-  await page.type(passwordId, process.env.SIMPLICITY_PASSWORD);
+  await page.type(emailId, "" + process.env.SIMPLICITY_EMAIL);
+  await page.type(passwordId, "" + process.env.SIMPLICITY_PASSWORD);
   await page.keyboard.press('Enter');
 
   await page.waitForNavigation();

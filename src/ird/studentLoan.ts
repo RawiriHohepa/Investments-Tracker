@@ -1,4 +1,4 @@
-import puppeteer from 'puppeteer'
+import puppeteer, { Page } from 'puppeteer'
 
 const studentLoan = async () => {
   const browser = await puppeteer.launch({ executablePath: process.env.PUPPETEER_EXECUTABLE_PATH });
@@ -33,25 +33,25 @@ const studentLoan = async () => {
   return valuesObject;
 };
 
-const login = async page => {
+const login = async (page: Page) => {
   const loginButtonClass = '.my-ir';
   const usernameId = '#userid';
   const passwordId = '#password';
   const studentLoanButtonId = '#caption2_dc-h-2'
 
-  await page.goto(process.env.IRD_URL);
+  await page.goto("" + process.env.IRD_URL);
 
-  await(await page.$(loginButtonClass)).click();
+  await(await page.$(loginButtonClass))?.click();
   await page.waitForNavigation();
 
-  await page.type(usernameId, process.env.IRD_USERNAME);
-  await page.type(passwordId, process.env.IRD_PASSWORD);
+  await page.type(usernameId, "" + process.env.IRD_USERNAME);
+  await page.type(passwordId, "" + process.env.IRD_PASSWORD);
   await page.keyboard.press('Enter');
 
   await page.waitForNavigation();
   await page.waitForSelector('.CaptionLinkText');
 
-  await(await page.$(studentLoanButtonId)).click();
+  await(await page.$(studentLoanButtonId))?.click();
   await page.waitForNavigation();
 }
 
