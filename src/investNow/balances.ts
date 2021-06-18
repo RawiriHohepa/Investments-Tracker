@@ -1,16 +1,8 @@
 import puppeteer, { Page } from 'puppeteer'
 import getPasscode from './getPasscode';
+import { InvestNow } from "../types/InvestNow";
 
-type InvestNowFund = {
-  Name: string;
-  Qty: string;
-  Price: string;
-  Value: string;
-  FX: string;
-  NZD: string;
-}
-
-const balances = async () => {
+const balances = async (): Promise<InvestNow> => {
   const browser = await puppeteer.launch({ executablePath: process.env.PUPPETEER_EXECUTABLE_PATH });
   const page = await browser.newPage();
 
@@ -26,26 +18,24 @@ const balances = async () => {
   ) as unknown as string[];
 
   // FIXME doesn't work with cash currently being processed
-  const balances = {};
-  const fund: InvestNowFund = {
+  const balances: InvestNow = {};
+  balances[td[0]] = {
     Name: td[1],
-    Qty: td[2],
-    Price: td[3],
-    Value: td[4],
-    FX: td[5],
-    NZD: td[6],
+    Qty: parseFloat(td[2].replace(",", "")),
+    Price: parseFloat(td[3].replace(",", "")),
+    Value: parseFloat(td[4].replace(",", "")),
+    FX: parseFloat(td[5].replace(",", "")),
+    NZD: parseFloat(td[6].replace(",", "")),
   };
-  balances[td[0]] = fund;
 
-  // const fund2: InvestNowFund = {
-  //     Name: td[9],
-  //     Qty: td[10],
-  //     Price: td[10],
-  //     Value: td[12],
-  //     FX: td[13],
-  //     NZD: td[14],
+  // balances[td[8]] = {
+  //   Name: td[9],
+  //   Qty: td[10],
+  //   Price: td[10],
+  //   Value: td[12],
+  //   FX: td[13],
+  //   NZD: td[14],
   // };
-  // balances[td[8]] = fund2;
 
   await browser.close();
   return balances;
