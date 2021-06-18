@@ -1,5 +1,5 @@
-const fs = require('fs');
-const readline = require('readline');
+import fs from 'fs'
+import readline from 'readline'
 const { google } = require('googleapis');
 
 // If modifying these scopes, delete token.json.
@@ -28,7 +28,7 @@ const authorize = async () => {
 
   // Check if we have previously stored a token.
   try {
-    const token = await fs.readFileSync(TOKEN_PATH);
+    const token = fs.readFileSync(TOKEN_PATH).toString();
 
     await oAuth2Client.setCredentials(JSON.parse(token));
     return oAuth2Client;
@@ -43,7 +43,7 @@ const authorize = async () => {
  * @param {google.auth.OAuth2} oAuth2Client The OAuth2 client to get token for.
  * @param {getEventsCallback} callback The callback for the authorized client.
  */
-// FIXME doesn't work to set new token, must use googleapi.js
+// FIXME doesn't work to set new token, must use googleapi.ts
 const getNewToken = async (oAuth2Client) => {
   const authUrl = oAuth2Client.generateAuthUrl({
     access_type: 'offline',
@@ -89,7 +89,7 @@ const getAndParseMessages = async (auth) => {
 
     return res.data.payload;
   }));
-  const message = messages[0];
+  const message: any = messages[0];
 
   const parts = message.parts.map(part => part.parts);
   const parts0 = parts[0];
@@ -100,4 +100,4 @@ const getAndParseMessages = async (auth) => {
   return words[0];
 }
 
-module.exports = getPasscode;
+export default getPasscode;

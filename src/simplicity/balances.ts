@@ -1,21 +1,25 @@
-const puppeteer = require('puppeteer');
+import puppeteer, { Page } from 'puppeteer'
+import { Simplicity } from '../types';
 
-const balances = async () => {
+const balances = async (): Promise<Simplicity> => {
   const browser = await puppeteer.launch({ executablePath: process.env.PUPPETEER_EXECUTABLE_PATH });
   const page = await browser.newPage();
 
   await login(page);
 
   // FIXME For some reason this is needed for all three balances to be scraped successfully.
-  await page.screenshot({ path: 'simplicity/screenshot.png' });
+  await page.screenshot({ path: 'src/simplicity/screenshot.png' });
 
-  const buttonTexts = await page.$$eval('button', buttons =>
-    buttons.map(button =>
-      button.textContent
-    )
-  );
+  const buttonTexts = await page.$$eval(
+      'button',
+      buttons => (
+        buttons.map(button =>
+          button.textContent
+        )
+      )
+  ) as unknown as string[];
 
-  const values = [...buttonTexts]
+  const values = buttonTexts
     .slice(2) // Remove unnecessary buttons
     .map(value =>
       value
@@ -33,14 +37,14 @@ const balances = async () => {
   return balances;
 };
 
-const login = async page => {
+const login = async (page: Page) => {
   const emailId = '#email';
   const passwordId = '#password';
 
-  await page.goto(process.env.SIMPLICITY_URL);
+  await page.goto("" + process.env.SIMPLICITY_URL);
 
-  await page.type(emailId, process.env.SIMPLICITY_EMAIL);
-  await page.type(passwordId, process.env.SIMPLICITY_PASSWORD);
+  await page.type(emailId, "" + process.env.SIMPLICITY_EMAIL);
+  await page.type(passwordId, "" + process.env.SIMPLICITY_PASSWORD);
   await page.keyboard.press('Enter');
 
   await page.waitForNavigation();
@@ -48,4 +52,4 @@ const login = async page => {
   await page.setViewport({ width: 1500, height: 1000 });
 }
 
-module.exports = balances;
+export default balances;
