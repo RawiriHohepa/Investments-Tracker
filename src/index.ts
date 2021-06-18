@@ -2,10 +2,10 @@ import express from 'express'
 import path from 'path'
 require('dotenv').config();
 
-const simplicity = require('./simplicity/balances');
-const ird = require('./ird/studentLoan');
-const investNow = require('./investNow/balances');
-const kraken = require('./kraken/balances');
+import simplicity from './simplicity/balances';
+import ird from './ird/studentLoan';
+import investNow from './investNow/balances';
+import kraken from './kraken/balances';
 
 // Setup Express
 const app = express();

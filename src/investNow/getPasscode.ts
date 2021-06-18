@@ -1,4 +1,3 @@
-export {};
 import fs from 'fs'
 import readline from 'readline'
 const { google } = require('googleapis');
@@ -101,4 +100,4 @@ const getAndParseMessages = async (auth) => {
   return words[0];
 }
 
-module.exports = getPasscode;
+export default getPasscode;

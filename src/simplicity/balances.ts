@@ -1,4 +1,3 @@
-export {};
 import puppeteer, { Page } from 'puppeteer'
 import { Simplicity } from '../types';
 
@@ -53,4 +52,4 @@ const login = async (page: Page) => {
   await page.setViewport({ width: 1500, height: 1000 });
 }
 
-module.exports = balances;
+export default balances;

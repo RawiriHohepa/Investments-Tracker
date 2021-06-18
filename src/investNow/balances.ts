@@ -1,6 +1,5 @@
-export {};
 import puppeteer, { Page } from 'puppeteer'
-const getPasscode = require('./getPasscode');
+import getPasscode from './getPasscode';
 
 type InvestNowFund = {
   Name: string;
@@ -76,4 +75,4 @@ const login = async (page: Page) => {
   await page.setViewport({ height: 1200, width: 1000 });
 }
 
-module.exports = balances;
+export default balances;

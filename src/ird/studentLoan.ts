@@ -55,4 +55,4 @@ const login = async (page: Page) => {
   await page.waitForNavigation();
 }
 
-module.exports = studentLoan;
+export default studentLoan;

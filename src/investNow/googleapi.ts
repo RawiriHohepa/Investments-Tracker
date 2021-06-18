@@ -1,6 +1,6 @@
 import fs from 'fs'
 import readline from 'readline'
-const {google} = require('googleapis');
+const { google } = require('googleapis');
 
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
@@ -91,4 +91,4 @@ function listLabels(auth) {
   });
 }
 
-module.exports = googleapi;
+export default googleapi;
