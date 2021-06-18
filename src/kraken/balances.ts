@@ -8,7 +8,7 @@ import {
   AssetPairArrayLike,
   AmountsArrayLike,
   PriceArrayLike
-} from "./api/types";
+} from "../types/krakenApi";
 import { Kraken } from "../types";
 
 type Coin = {

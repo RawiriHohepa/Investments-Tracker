@@ -3,7 +3,7 @@ import {
     AmountsArrayLike,
     AssetPairArrayLike,
     PriceArrayLike
-} from "./types";
+} from "../../types/krakenApi";
 import apiSign from "./apiSign";
 
 export const amountsApi = async (): Promise<AmountsArrayLike> => {
