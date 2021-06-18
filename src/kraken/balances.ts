@@ -1,11 +1,14 @@
 import {
-  AssetPair,
-  AssetPairArrayLike,
-  AssetPairPrice,
   amountsApi,
   assetPairsApi,
-  pricesApi, AmountsArrayLike, PriceArrayLike
-} from "./krakenApi";
+  pricesApi
+} from "./api";
+import {
+  AssetPair,
+  AssetPairArrayLike,
+  AmountsArrayLike,
+  PriceArrayLike
+} from "./api/types";
 import { Kraken } from "../types";
 
 type Coin = {
@@ -115,4 +118,4 @@ const combineBalances = (coins: Coin[], prices: Price[]) => {
   return balances;
 }
 
-module.exports = balances;
+export default balances;
