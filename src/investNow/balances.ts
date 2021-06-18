@@ -1,8 +1,18 @@
 export {};
 import puppeteer, { Page } from 'puppeteer'
 const getPasscode = require('./getPasscode');
+import { InvestNow } from "../types";
 
-const balances = async () => {
+type InvestNowFund = {
+  Name: string;
+  Qty: string;
+  Price: string;
+  Value: string;
+  FX: string;
+  NZD: string;
+}
+
+const balances = async (): Promise<InvestNow> => {
   const browser = await puppeteer.launch({ executablePath: process.env.PUPPETEER_EXECUTABLE_PATH });
   const page = await browser.newPage();
 
@@ -10,15 +20,16 @@ const balances = async () => {
 
   await page.screenshot({ path: 'src/investNow/screenshot.png' });
 
-  const td = await page.$$eval('td', cells =>
-    cells.map(cell =>
-      cell.textContent
-    )
-  );
+  const td = await page.$$eval('td', cells => (
+          cells.map(cell =>
+              cell.textContent
+          )
+      )
+  ) as unknown as string[];
 
   // FIXME doesn't work with cash currently being processed
   const balances = {};
-  balances[td[0]] = {
+  const fund: InvestNowFund = {
     Name: td[1],
     Qty: td[2],
     Price: td[3],
@@ -26,14 +37,17 @@ const balances = async () => {
     FX: td[5],
     NZD: td[6],
   };
-  // balances[td[8]] = {
-  //   Name: td[9],
-  //   Qty: td[10],
-  //   Price: td[10],
-  //   Value: td[12],
-  //   FX: td[13],
-  //   NZD: td[14],
+  balances[td[0]] = fund;
+
+  // const fund2: InvestNowFund = {
+  //     Name: td[9],
+  //     Qty: td[10],
+  //     Price: td[10],
+  //     Value: td[12],
+  //     FX: td[13],
+  //     NZD: td[14],
   // };
+  // balances[td[8]] = fund2;
 
   await browser.close();
   return balances;
