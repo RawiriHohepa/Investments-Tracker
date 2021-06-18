@@ -1,3 +1,3 @@
 export type Ird = {
-    [s: string]: string;
+    [s: string]: number;
 };

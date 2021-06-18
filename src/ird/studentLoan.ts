@@ -27,7 +27,11 @@ const studentLoan = async (): Promise<Ird> => {
   const valuesObject: Ird = {};
   valuesArray.map((value, index) => {
     if (index % 2 === 0) {
-      valuesObject[value] = valuesArray[index + 1];
+      valuesObject[value] = parseFloat(
+          valuesArray[index + 1]
+              .replace("$", "")
+              .replace(",", "")
+      );
     }
   })
 
