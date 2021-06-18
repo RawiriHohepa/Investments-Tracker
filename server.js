@@ -9,7 +9,7 @@ const kraken = require('./kraken/balances');
 
 // Setup Express
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000 || 3001 || 3002;
 
 // Setup JSON parsing for the request body
 app.use(express.json());

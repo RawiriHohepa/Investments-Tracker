@@ -42,7 +42,7 @@ const pricesApi = async (coins) => {
 
 const assetPairsApi = async () => {
   const res = await axios.get(process.env.KRAKEN_API_URI + process.env.KRAKEN_API_ASSET_PAIRS_ENDPOINT);
-// console.log(res.data);
+
   return res.data.result;
 }
 
@@ -91,7 +91,7 @@ const filterPrices = prices => {
 
 const filterAssetPairs = (coins, assetPairs) => {
   const pairs = coins.map(coin => {
-    if (coin === "ZUSD") {
+    if (coin === "ZUSD" || coin === "USD") {
       return assetPairs["USDCUSD"];
     }
     return Object.values(assetPairs).find(pair =>
@@ -108,7 +108,7 @@ const combineBalances = (amountsFiltered, pricesFiltered) => {
 
   balances.forEach(balance => {
     let pricePair;
-    if (balance.coin === "ZUSD") {
+    if (balance.coin === "ZUSD" || balance.coin === "USD") {
       pricePair = pricesFiltered.find(price => price.pair === "USDCUSD");
     } else if (balance.coin === "XXDG") {
       pricePair = pricesFiltered.find(price => price.pair.includes("XDG"));

@@ -25,14 +25,14 @@ const balances = async () => {
     FX: td[5],
     NZD: td[6],
   };
-  balances[td[8]] = {
-    Name: td[9],
-    Qty: td[10],
-    Price: td[10],
-    Value: td[12],
-    FX: td[13],
-    NZD: td[14],
-  };
+  // balances[td[8]] = {
+  //   Name: td[9],
+  //   Qty: td[10],
+  //   Price: td[10],
+  //   Value: td[12],
+  //   FX: td[13],
+  //   NZD: td[14],
+  // };
 
   await browser.close();
   return balances;
@@ -52,6 +52,8 @@ const login = async page => {
 
   await page.waitForSelector(passcodeId);
 
+  // Give time for email with login code to be sent
+  await page.waitFor(2000);
   const passcode = await getPasscode();
   await page.type(passcodeId, passcode);
   await page.keyboard.press('Enter');
