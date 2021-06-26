@@ -40,7 +40,7 @@ app.get('/kraken', async (req, res) => {
 // When we make a GET request to '/nexo', send back this JSON content.
 app.get('/nexo', async (req, res) => {
     const { nsi } = req.query;
-    if (typeof nsi !== "string") {
+    if (typeof nsi !== "string" || !nsi) {
         res.sendStatus(400);
         return;
     }

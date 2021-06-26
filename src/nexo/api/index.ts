@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Balance, BalancesApiResponse } from "../../types/nexoApi";
+import { BalancesApiResponse } from "../../types/nexoApi";
 
 type Response = {
     access: boolean;
@@ -21,9 +21,8 @@ export const balancesApi = async (cookieProps: CookieProps) => {
             cookie
         }
     });
-    const balancesApiResponse = res.data.payload;
 
-    return filterBalances(balancesApiResponse.balances);
+    return res.data.payload;
 };
 
 const constructCookie = (cookieProps: CookieProps) => {
@@ -31,15 +30,4 @@ const constructCookie = (cookieProps: CookieProps) => {
         .map(key => `${key}=${cookieProps[key]};`);
 
     return keyValuePairs.join(" ");
-};
-
-const filterBalances = (balances: Balance[]) => {
-    const nonZeroBalances = balances.filter(balance => balance.total_balance !== 0);
-
-    return nonZeroBalances.map(balance => ({
-        coin: balance.currency_identity,
-        amount: balance.total_balance,
-        price: balance.usd_course,
-        balance: balance.total_balance * balance.usd_course,
-    }));
 };
