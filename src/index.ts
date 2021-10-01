@@ -7,6 +7,7 @@ import ird from './ird/studentLoan';
 import investNow from './investNow/balances';
 import kraken from './kraken/balances';
 import nexo from './nexo/balances';
+import yoroi from './yoroi/balances';
 
 // Setup Express
 const app = express();
@@ -46,6 +47,11 @@ app.get('/nexo', async (req, res) => {
     }
 
     res.json(await nexo(nsi));
+});
+
+// When we make a GET request to '/yoroi', send back this JSON content.
+app.get('/yoroi', async (req, res) => {
+    res.json(await yoroi());
 });
 
 // When we make a GET request to '/api', send back this JSON content.
