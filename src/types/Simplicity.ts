@@ -1,5 +1,5 @@
 export type Simplicity = {
-    conservative: string;
-    growth: string;
-    kiwisaver: string;
+    conservative?: number;
+    growth?: number;
+    kiwisaver?: number;
 };

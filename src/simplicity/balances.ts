@@ -27,10 +27,11 @@ const balances = async (): Promise<Simplicity> => {
         .replace(" ", "") // Remove space after decimal point
     );
 
+  const [kiwisaver, growth, conservative] = values;
   const balances = {
-    kiwisaver: values[0],
-    growth: values[1],
-    conservative: values[2],
+    kiwisaver: kiwisaver ? parseFloat(kiwisaver.replace(",", "")) : undefined,
+    growth: growth ? parseFloat(growth.replace(",", "")) : undefined,
+    conservative: conservative ? parseFloat(conservative.replace(",", "")) : undefined,
   }
 
   await browser.close();

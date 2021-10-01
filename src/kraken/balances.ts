@@ -64,6 +64,9 @@ const filterAssetPairs = (coins: string[], assetPairs: AssetPairArrayLike) => {
     if (coin === "ZUSD" || coin === "USD") {
       // USD Fiat
       pairs.push(assetPairs["USDCUSD"]);
+    } else if (coin === "ETH2") {
+      // ETH 2.0
+      pairs.push(assetPairs["XETHZUSD"]);
     } else {
       // Anything else
       const pair = Object.values(assetPairs).find(pair =>
@@ -102,6 +105,9 @@ const combineBalances = (coins: Coin[], prices: Price[]) => {
     } else if (coin.coin === "XXDG") {
       // Dogecoin
       price = prices.find(price => price.pair.includes("XDG"));
+    } else if (coin.coin === "ETH2") {
+      // ETH 2.0
+      price = prices.find(price => price.pair.includes("XETH"));
     } else {
       // Anything else
       price = prices.find(price => price.pair.includes(coin.coin));
