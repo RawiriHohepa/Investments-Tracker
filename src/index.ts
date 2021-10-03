@@ -8,6 +8,7 @@ import investNow from './investNow/balances';
 import kraken from './kraken/balances';
 import nexo from './nexo/balances';
 import yoroi from './yoroi/balances';
+import { usdNzdConversion } from './coinMarketCap';
 
 // Setup Express
 const app = express();
@@ -54,6 +55,26 @@ app.get('/yoroi', async (req, res) => {
     res.json(await yoroi());
 });
 
+const crypto = async (nexo_nsi: string | undefined) => {
+    return {
+        "USD/NZD": await usdNzdConversion(),
+        kraken: await kraken(),
+        nexo: nexo_nsi ? await nexo(nexo_nsi) : undefined,
+        yoroi: await yoroi(),
+    }
+};
+
+// When we make a GET request to '/yoroi', send back this JSON content.
+app.get('/crypto', async (req, res) => {
+    const { nexo_nsi } = req.query;
+    if (!!nexo_nsi && typeof nexo_nsi !== "string") {
+        res.sendStatus(400);
+        return;
+    }
+
+    res.json(await crypto(nexo_nsi));
+});
+
 // When we make a GET request to '/api', send back this JSON content.
 app.get('/api', async (req, res) => {
     const { nexo_nsi } = req.query;
@@ -66,9 +87,7 @@ app.get('/api', async (req, res) => {
         simplicity: await simplicity(),
         ird: await ird(),
         investNow: await investNow(),
-        kraken: await kraken(),
-        nexo: nexo_nsi ? await nexo(nexo_nsi) : undefined,
-        yoroi: await yoroi()
+        crypto: await crypto(nexo_nsi)
     });
 });
 
