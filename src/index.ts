@@ -8,7 +8,7 @@ import investNow from './investNow/balances';
 import kraken from './kraken/balances';
 import nexo from './nexo/balances';
 import yoroi from './yoroi/balances';
-import { usdNzdConversion } from './coinMarketCap';
+import { getUsdNzdConversion } from './coinMarketCap';
 
 // Setup Express
 const app = express();
@@ -57,7 +57,7 @@ app.get('/yoroi', async (req, res) => {
 
 const crypto = async (nexo_nsi: string | undefined) => {
     return {
-        "USD/NZD": await usdNzdConversion(),
+        "USD/NZD": await getUsdNzdConversion(),
         kraken: await kraken(),
         nexo: nexo_nsi ? await nexo(nexo_nsi) : undefined,
         yoroi: await yoroi(),
