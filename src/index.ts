@@ -68,6 +68,7 @@ app.get('/api', async (req, res) => {
         investNow: await investNow(),
         kraken: await kraken(),
         nexo: nexo_nsi ? await nexo(nexo_nsi) : undefined,
+        yoroi: await yoroi()
     });
 });
 
