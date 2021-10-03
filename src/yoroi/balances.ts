@@ -1,4 +1,4 @@
-import { ergoApi } from "./api";
+import { ergoApi, getAdaAmount } from "./api";
 import coinMarketCap, { ERGO_ID } from "./api/coinMarketCap";
 import { Yoroi } from "../types/Yoroi";
 
@@ -10,12 +10,22 @@ const balances = async (): Promise<Yoroi[]> => {
     const coinMarketCapCoins = await coinMarketCap()
     const ergoPrice = coinMarketCapCoins[ERGO_ID].quote.USD.price;
 
-    return [{
-        coin: "ERG",
-        amount: ergoAmount,
-        balance: ergoAmount * ergoPrice,
-        price: ergoPrice
-    }];
+    const adaAmount = await getAdaAmount();
+
+    return [
+        {
+            coin: "ADA",
+            amount: adaAmount,
+            balance: 0,
+            price: 0
+        },
+        {
+            coin: "ERG",
+            amount: ergoAmount,
+            balance: ergoAmount * ergoPrice,
+            price: ergoPrice
+        },
+    ];
 };
 
 export default balances;

@@ -1,10 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-
-export const ergoApi = async () => {
-    const uri = `${process.env.ERGO_API_URL}/${process.env.ERGO_ADDRESS}`;
-    const res = await axios.get<null, AxiosResponse<ErgoApiRepsonse>>(uri);
-    return res.data;
-};
+import puppeteer from "puppeteer";
 
 type ErgoApiRepsonse = {
     "summary": {
@@ -18,4 +13,25 @@ type ErgoApiRepsonse = {
         "confirmedTokensBalance": number[];
         "totalTokensBalance": number[];
     }
+}
+
+export const ergoApi = async () => {
+    const uri = `${process.env.ERGO_API_URL}/${process.env.ERGO_ADDRESS}`;
+    const res = await axios.get<null, AxiosResponse<ErgoApiRepsonse>>(uri);
+    return res.data;
+};
+
+export const getAdaAmount = async () => {
+    const browser = await puppeteer.launch({ executablePath: process.env.PUPPETEER_EXECUTABLE_PATH });
+    const page = await browser.newPage();
+    await page.goto(`${process.env.CARDANOSCAN_URL}${process.env.CARDANOSCAN_STAKE_KEY}`)
+
+    await page.screenshot({ path: 'src/yoroi/screenshot.png' });
+
+    const adaAmountId = ".adaAmount"
+    const adaAmountElementHandle = await page.$eval<string>(adaAmountId, cell => cell.textContent);
+    const adaAmountString = adaAmountElementHandle.toString().trim();
+
+    await browser.close();
+    return parseFloat(adaAmountString);
 }
