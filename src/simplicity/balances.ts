@@ -20,7 +20,7 @@ const balances = async (): Promise<Simplicity> => {
   ) as unknown as string[];
 
   const values = buttonTexts
-    .slice(2) // Remove unnecessary buttons
+    .slice(3) // Remove unnecessary buttons
     .map(value =>
       value
         .split("$")[1] // Remove account type
@@ -39,13 +39,13 @@ const balances = async (): Promise<Simplicity> => {
 };
 
 const login = async (page: Page) => {
-  const emailId = '#email';
-  const passwordId = '#password';
+  const emailSelector = '[name=email]';
+  const passwordSelector = '[name=password]';
 
   await page.goto("" + process.env.SIMPLICITY_URL);
 
-  await page.type(emailId, "" + process.env.SIMPLICITY_EMAIL);
-  await page.type(passwordId, "" + process.env.SIMPLICITY_PASSWORD);
+  await page.type(emailSelector, "" + process.env.SIMPLICITY_EMAIL);
+  await page.type(passwordSelector, "" + process.env.SIMPLICITY_PASSWORD);
   await page.keyboard.press('Enter');
 
   await page.waitForNavigation();
