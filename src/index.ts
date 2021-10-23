@@ -7,6 +7,7 @@ import ird from './ird/studentLoan';
 import investNow from './investNow/balances';
 import kraken from './kraken/balances';
 import nexo from './nexo/balances';
+import exodus from './exodus/balances';
 import yoroi from './yoroi/balances';
 import { getUsdNzdConversion } from './coinMarketCap';
 
@@ -50,35 +51,55 @@ app.get('/nexo', async (req, res) => {
     res.json(await nexo(nsi));
 });
 
+// When we make a GET request to '/exodus', send back this JSON content.
+app.get('/exodus', async (req, res) => {
+    const { xmr_amount } = req.query;
+    if (typeof xmr_amount !== "string" || !xmr_amount || isNaN(parseFloat(xmr_amount))) {
+        res.sendStatus(400);
+        return;
+    }
+
+    res.json(await exodus(parseFloat(xmr_amount)));
+});
+
 // When we make a GET request to '/yoroi', send back this JSON content.
 app.get('/yoroi', async (req, res) => {
     res.json(await yoroi());
 });
 
-const crypto = async (nexo_nsi: string | undefined) => {
+const crypto = async (nexo_nsi: string | undefined, exodus_xmr_amount: number) => {
     return {
         "USD/NZD": await getUsdNzdConversion(),
         kraken: await kraken(),
         nexo: nexo_nsi ? await nexo(nexo_nsi) : undefined,
+        exodus: await exodus(exodus_xmr_amount),
         yoroi: await yoroi(),
     }
 };
 
 // When we make a GET request to '/yoroi', send back this JSON content.
 app.get('/crypto', async (req, res) => {
-    const { nexo_nsi } = req.query;
+    const { nexo_nsi, exodus_xmr_amount } = req.query;
     if (!!nexo_nsi && typeof nexo_nsi !== "string") {
         res.sendStatus(400);
         return;
     }
+    if (typeof exodus_xmr_amount !== "string" || !exodus_xmr_amount || isNaN(parseFloat(exodus_xmr_amount))) {
+        res.sendStatus(400);
+        return;
+    }
 
-    res.json(await crypto(nexo_nsi));
+    res.json(await crypto(nexo_nsi, parseFloat(exodus_xmr_amount)));
 });
 
 // When we make a GET request to '/api', send back this JSON content.
 app.get('/api', async (req, res) => {
-    const { nexo_nsi } = req.query;
+    const { nexo_nsi, exodus_xmr_amount } = req.query;
     if (!!nexo_nsi && typeof nexo_nsi !== "string") {
+        res.sendStatus(400);
+        return;
+    }
+    if (typeof exodus_xmr_amount !== "string" || !exodus_xmr_amount || isNaN(parseFloat(exodus_xmr_amount))) {
         res.sendStatus(400);
         return;
     }
@@ -87,7 +108,7 @@ app.get('/api', async (req, res) => {
         simplicity: await simplicity(),
         ird: await ird(),
         investNow: await investNow(),
-        crypto: await crypto(nexo_nsi)
+        crypto: await crypto(nexo_nsi, parseFloat(exodus_xmr_amount))
     });
 });
 

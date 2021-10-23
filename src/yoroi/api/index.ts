@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import puppeteer from "puppeteer";
 
-type ErgoApiRepsonse = {
+type ErgoApiResponse = {
     "summary": {
         "id": string;
     },
@@ -17,7 +17,7 @@ type ErgoApiRepsonse = {
 
 export const ergoApi = async () => {
     const uri = `${process.env.ERGO_API_URL}/${process.env.ERGO_ADDRESS}`;
-    const res = await axios.get<null, AxiosResponse<ErgoApiRepsonse>>(uri);
+    const res = await axios.get<null, AxiosResponse<ErgoApiResponse>>(uri);
     return res.data;
 };
 
