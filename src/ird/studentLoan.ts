@@ -18,14 +18,12 @@ const studentLoan = async (): Promise<Ird> => {
       )
   ) as unknown as string[];
 
-  // Remove every second item to remove duplicates
-  const valuesArray = texts.filter((_, index) => index % 2 === 0);
-  // Remove irrelevant item in last position
-  valuesArray.splice(-1, 1);
+  // Remove empty items and every second item to remove duplicates
+  const valuesArray = texts.filter((text, index) => !!text && index % 2 === 0);
 
   // For every two items, first is key and second is value
   const valuesObject: Ird = {};
-  valuesArray.map((value, index) => {
+  valuesArray.forEach((value, index) => {
     if (index % 2 === 0) {
       valuesObject[value] = parseFloat(
           valuesArray[index + 1]
@@ -33,7 +31,7 @@ const studentLoan = async (): Promise<Ird> => {
               .replace(",", "")
       );
     }
-  })
+  });
 
   await browser.close();
   return valuesObject;
@@ -43,7 +41,8 @@ const login = async (page: Page) => {
   const loginButtonClass = '.my-ir';
   const usernameId = '#userid';
   const passwordId = '#password';
-  const studentLoanButtonId = '#caption2_dc-h-2'
+  const studentLoanButtonId = '#caption2_Dm-i1-4'
+
 
   await page.goto("" + process.env.IRD_URL);
 
