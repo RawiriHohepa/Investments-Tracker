@@ -8,11 +8,7 @@ import { ErgoApiResponse } from "./types";
 const UNITS_PER_ERGO = 1000000000;
 
 const getErgo: () => Promise<Coin> = async () => {
-    const url = `${config.ERGO_API_URL}/${process.env.ERGO_ADDRESS}`;
-    const res = await axios.get<ErgoApiResponse>(url);
-    const amountInUnits = res.data.transactions.totalBalance;
-    const amount = amountInUnits / UNITS_PER_ERGO;
-
+    const amount = await getAmount();
     const coin = await getCmcCoin("ERG");
 
     return {
@@ -29,5 +25,12 @@ const getErgo: () => Promise<Coin> = async () => {
         },
     };
 };
+
+const getAmount = async () => {
+    const url = `${config.ERGO_API_URL}/${process.env.ERGO_ADDRESS}`;
+    const res = await axios.get<ErgoApiResponse>(url);
+    const amountInUnits = res.data.transactions.totalBalance;
+    return amountInUnits / UNITS_PER_ERGO;
+}
 
 export default getErgo;
