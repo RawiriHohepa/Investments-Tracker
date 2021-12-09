@@ -28,7 +28,7 @@ const balances = async (): Promise<InvestNow> => {
     NZD: parseFloat(td[6].replace(",", "")),
   };
 
-  // balances[td[8]] = {
+  // index[td[8]] = {
   //   Name: td[9],
   //   Qty: td[10],
   //   Price: td[10],

@@ -1,43 +1,38 @@
-import axios, {AxiosResponse} from "axios";
-import { coinMarketCapApiResponse } from "../types/coinMarketCapApi";
+import axios from "axios";
+import { CmcCoin } from "../crypto/types";
+import config from "../config";
+import { LatestQuotesResponseUsd, LatestQuotesResponseNzd } from "./types";
 
-export const ADA_ID = 2010;
-export const ERG_ID = 1762;
-export const ALGO_ID = 4030;
-export const XMR_ID = 328;
-const USDC_ID = 3408;
+export const getCmcCoin: (symbol: string) => Promise<CmcCoin> = async (symbol: string) => {
+    const usdCoin = await getUsdCoin(symbol);
+    const nzdCoin = await getNzdPrice(symbol);
 
-export const getUsdNzdConversion = async () => {
-    const url = `${process.env.COINMARKETCAP_API_URL}${process.env.COINMARKETCAP_QUOTES_ENDPOINT}?id=${USDC_ID}&convert=NZD`;
+    return {
+        id: usdCoin.id,
+        symbol: usdCoin.symbol,
+        name: usdCoin.name,
+        slug: usdCoin.slug,
+        usd: usdCoin.quote.USD.price,
+        nzd: nzdCoin.quote.NZD.price,
+    }
+}
 
-    const res = await axios.get<null, AxiosResponse<coinMarketCapApiResponse>>(url, {
+const getUsdCoin = async (symbol: string) => {
+    const url = `${config.COINMARKETCAP_API_URL}${config.COINMARKETCAP_QUOTES_ENDPOINT}?symbol=${symbol}`;
+    const res = await axios.get<LatestQuotesResponseUsd>(url, {
         headers: {
             "X-CMC_PRO_API_KEY": process.env.COINMARKETCAP_API_KEY
         }
     });
-    const coinMarketCapCoins = res.data.data;
-
-    return coinMarketCapCoins[USDC_ID].quote.NZD.price;
+    return res.data.data[symbol];
 }
 
-type Prices = {
-    [id: string]: number
-}
-
-export const getCmcPrices = async (ids: number[]): Promise<Prices> => {
-    const idsCsv = ids.join(",");
-    const url = `${process.env.COINMARKETCAP_API_URL}${process.env.COINMARKETCAP_QUOTES_ENDPOINT}?id=${idsCsv}`;
-
-    const res = await axios.get<null, AxiosResponse<coinMarketCapApiResponse>>(url, {
+const getNzdPrice = async (symbol: string) => {
+    const url = `${config.COINMARKETCAP_API_URL}${config.COINMARKETCAP_QUOTES_ENDPOINT}?symbol=${symbol}&convert=nzd`;
+    const res = await axios.get<LatestQuotesResponseNzd>(url, {
         headers: {
             "X-CMC_PRO_API_KEY": process.env.COINMARKETCAP_API_KEY
         }
     });
-    const coinMarketCapCoins = res.data.data;
-
-    const prices = {};
-    ids.forEach(id => {
-        prices[id] = coinMarketCapCoins[id].quote.USD.price;
-    });
-    return prices;
+    return res.data.data[symbol];
 }
