@@ -5,7 +5,7 @@ require('dotenv').config();
 import simplicity from './simplicity/balances';
 import ird from './ird/studentLoan';
 import investNow from './investNow/balances';
-import yoroi from './yoroi';
+import yoroi from './crypto/yoroi';
 
 // Setup Express
 const app = express();

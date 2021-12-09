@@ -1,4 +1,4 @@
-import { Coin } from "../crypto/types";
+import { Coin } from "../types";
 import getErgo from "./ergo";
 
 const yoroi = async (): Promise<Coin[]> => {

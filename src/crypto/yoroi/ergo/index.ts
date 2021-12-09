@@ -1,26 +1,13 @@
 import axios  from "axios";
-import config from "../../config";
-import { Coin } from "../../crypto/types";
+import config from "../../../config";
+import { Coin } from "../../types";
 import { getCmcCoin } from "../../coinMarketCap";
-import Platform from "../../crypto/Platform";
+import Platform from "../../Platform";
+import { ErgoApiResponse } from "./types";
 
 const UNITS_PER_ERGO = 1000000000;
 
-type ErgoApiResponse = {
-    "summary": {
-        "id": string;
-    },
-    "transactions": {
-        "confirmed": number;
-        "totalReceived": number;
-        "confirmedBalance": number;
-        "totalBalance": number;
-        "confirmedTokensBalance": number[];
-        "totalTokensBalance": number[];
-    }
-}
-
-const ergoApi: () => Promise<Coin> = async () => {
+const getErgo: () => Promise<Coin> = async () => {
     const url = `${config.ERGO_API_URL}/${process.env.ERGO_ADDRESS}`;
     const res = await axios.get<ErgoApiResponse>(url);
     const amountInUnits = res.data.transactions.totalBalance;
@@ -43,4 +30,4 @@ const ergoApi: () => Promise<Coin> = async () => {
     };
 };
 
-export default ergoApi;
+export default getErgo;

@@ -1,6 +1,6 @@
 import axios from "axios";
-import { CmcCoin } from "../crypto/types";
-import config from "../config";
+import { CmcCoin } from "../types";
+import config from "../../config";
 import { LatestQuotesResponseUsd, LatestQuotesResponseNzd } from "./types";
 
 export const getCmcCoin: (symbol: string) => Promise<CmcCoin> = async (symbol: string) => {
