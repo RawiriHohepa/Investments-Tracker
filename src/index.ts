@@ -1,5 +1,4 @@
 import express from 'express'
-import path from 'path'
 require('dotenv').config();
 
 import simplicity from './simplicity/balances';
@@ -16,22 +15,30 @@ app.use(express.json());
 
 // Setup our routes.
 
-// When we make a GET request to '/simplicity', send back this JSON content.
-app.get('/simplicity', async (req, res) => {
-    res.json(await simplicity());
+app.get('/simplicity', async (req, res, next) => {
+    try {
+        res.json(await simplicity());
+    } catch (err) {
+        next(err);
+    }
 });
 
-// When we make a GET request to '/ird', send back this JSON content.
-app.get('/ird', async (req, res) => {
-    res.json(await ird());
+app.get('/ird', async (req, res, next) => {
+    try {
+        res.json(await ird());
+    } catch (err) {
+        next(err);
+    }
 });
 
-// When we make a GET request to '/investNow', send back this JSON content.
-app.get('/investNow', async (req, res) => {
-    res.json(await investNow());
+app.get('/investNow', async (req, res, next) => {
+    try {
+        res.json(await investNow());
+    } catch (err) {
+        next(err);
+    }
 });
 
-// When we make a GET request to '/yoroi', send back this JSON content.
 app.get('/yoroi', async (req, res, next) => {
     try {
         res.json(await yoroi());
@@ -41,32 +48,30 @@ app.get('/yoroi', async (req, res, next) => {
 });
 
 const crypto = async () => {
-    return [...await yoroi()]
+    return [
+        ...await yoroi(),
+    ];
 };
 
-// When we make a GET request to '/yoroi', send back this JSON content.
-app.get('/crypto', async (req, res) => {
-    res.json(await crypto());
+app.get('/crypto', async (req, res, next) => {
+    try {
+        res.json(await crypto());
+    } catch (err) {
+        next(err);
+    }
 });
 
-// When we make a GET request to '/api', send back this JSON content.
-app.get('/api', async (req, res) => {
-    res.json({
-        simplicity: await simplicity(),
-        ird: await ird(),
-        investNow: await investNow(),
-        crypto: await crypto()
-    });
+app.get('/api', async (req, res, next) => {
+    try {
+        res.json({
+            simplicity: await simplicity(),
+            ird: await ird(),
+            investNow: await investNow(),
+            crypto: await crypto()
+        });
+    } catch (err) {
+        next(err);
+    }
 });
 
-// Make the "public" folder available statically
-app.use(express.static(path.join(__dirname, 'public')));
-
-// app.use((err, req, res, next) => {
-//     next(err);
-// });
-
-// Start the server running. Once the server is running, the given function will be called, which will
-// log a simple message to the server console. Any console.log() statements in your node.js code
-// can be seen in the terminal window used to run the server.
 app.listen(port, () => console.log(`App server listening on port ${port}!`));
