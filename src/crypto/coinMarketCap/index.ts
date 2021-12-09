@@ -3,7 +3,7 @@ import { CmcCoin } from "../types";
 import config from "../../config";
 import { LatestQuotesResponseUsd, LatestQuotesResponseNzd } from "./types";
 
-export const getCmcCoin: (symbol: string) => Promise<CmcCoin> = async (symbol: string) => {
+export const getCmcCoin = async (symbol: string): Promise<CmcCoin> => {
     const usdCoin = await getUsdCoin(symbol);
     const nzdCoin = await getNzdPrice(symbol);
 

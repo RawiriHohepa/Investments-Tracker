@@ -4,7 +4,7 @@ import { getCmcCoin } from "../../coinMarketCap";
 import Platform from "../../Platform";
 import config from "../../../config";
 
-const getAda: () => Promise<Coin> = async () => {
+const getAda = async (): Promise<Coin> => {
     const amount = await getAmount();
     const coin = await getCmcCoin("ADA");
 

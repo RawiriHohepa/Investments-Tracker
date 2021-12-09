@@ -7,7 +7,7 @@ import { ErgoApiResponse } from "./types";
 
 const UNITS_PER_ERGO = 1000000000;
 
-const getErgo: () => Promise<Coin> = async () => {
+const getErgo = async (): Promise<Coin> => {
     const amount = await getAmount();
     const coin = await getCmcCoin("ERG");
 
