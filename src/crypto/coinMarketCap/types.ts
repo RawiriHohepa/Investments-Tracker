@@ -51,18 +51,16 @@ type BaseLatestQuotesResponseQuote = {
     "last_updated": string
 }
 
-export type LatestQuotesResponseUsd = BaseLatestQuotesResponse<
-    BaseLatestQuotesResponseCoin & {
-        "quote": {
-            "USD": BaseLatestQuotesResponseQuote
-        }
-    }
->;
+export type LatestQuotesResponseUsd = BaseLatestQuotesResponse<LatestQuotesResponseCoinUsd>;
+export type LatestQuotesResponseNzd = BaseLatestQuotesResponse<LatestQuotesResponseCoinNzd>;
 
-export type LatestQuotesResponseNzd = BaseLatestQuotesResponse<
-    BaseLatestQuotesResponseCoin & {
-        "quote": {
-            "NZD": BaseLatestQuotesResponseQuote
-        }
+export type LatestQuotesResponseCoinUsd = BaseLatestQuotesResponseCoin & {
+    "quote": {
+        "USD": BaseLatestQuotesResponseQuote
     }
->;
+}
+export type LatestQuotesResponseCoinNzd = BaseLatestQuotesResponseCoin & {
+    "quote": {
+        "NZD": BaseLatestQuotesResponseQuote
+    }
+}

@@ -4,6 +4,7 @@ require('dotenv').config();
 import simplicity from './simplicity/balances';
 import ird from './ird/studentLoan';
 import investNow from './investNow/balances';
+import nexo from "./crypto/nexo";
 import exodus from "./crypto/exodus";
 import yoroi from './crypto/yoroi';
 
@@ -40,22 +41,40 @@ app.get('/investNow', async (req, res, next) => {
     }
 });
 
-const crypto = async (exodus_xmr_amount: number) => {
+const crypto = async (nexo_nsi: string, exodus_xmr_amount: number) => {
     return [
+        ...await nexo(nexo_nsi),
         ...await exodus(exodus_xmr_amount),
         ...await yoroi(),
     ];
 };
 
 app.get('/crypto', async (req, res, next) => {
-    const { exodus_xmr_amount } = req.query;
-    if (typeof exodus_xmr_amount !== "string" || !exodus_xmr_amount || isNaN(parseFloat(exodus_xmr_amount))) {
+    const { nexo_nsi, exodus_xmr_amount } = req.query;
+    if (
+        (typeof nexo_nsi !== "string" || !nexo_nsi)
+        || (typeof exodus_xmr_amount !== "string" || !exodus_xmr_amount || isNaN(parseFloat(exodus_xmr_amount)))
+    ) {
         res.sendStatus(400);
         return;
     }
 
     try {
-        res.json(await crypto(parseFloat(exodus_xmr_amount)));
+        res.json(await crypto(nexo_nsi, parseFloat(exodus_xmr_amount)));
+    } catch (err) {
+        next(err);
+    }
+});
+
+app.get('/crypto/nexo', async (req, res, next) => {
+    const { nsi } = req.query;
+    if (typeof nsi !== "string" || !nsi) {
+        res.sendStatus(400);
+        return;
+    }
+
+    try {
+        res.json(await nexo(nsi));
     } catch (err) {
         next(err);
     }
@@ -84,8 +103,11 @@ app.get('/crypto/yoroi', async (req, res, next) => {
 });
 
 app.get('/api', async (req, res, next) => {
-    const { exodus_xmr_amount } = req.query;
-    if (typeof exodus_xmr_amount !== "string" || !exodus_xmr_amount || isNaN(parseFloat(exodus_xmr_amount))) {
+    const { nexo_nsi, exodus_xmr_amount } = req.query;
+    if (
+        (typeof nexo_nsi !== "string" || !nexo_nsi)
+        || (typeof exodus_xmr_amount !== "string" || !exodus_xmr_amount || isNaN(parseFloat(exodus_xmr_amount)))
+    ) {
         res.sendStatus(400);
         return;
     }
@@ -95,7 +117,7 @@ app.get('/api', async (req, res, next) => {
             simplicity: await simplicity(),
             ird: await ird(),
             investNow: await investNow(),
-            crypto: await crypto(parseFloat(exodus_xmr_amount))
+            crypto: await crypto(nexo_nsi, parseFloat(exodus_xmr_amount))
         });
     } catch (err) {
         next(err);
