@@ -56,7 +56,7 @@ const login = async (page: Page) => {
   await page.waitForSelector(passcodeId);
 
   // Give time for email with login code to be sent
-  await page.waitFor(2000);
+  await page.waitForTimeout(5000);
   const passcode = await getPasscode();
   await page.type(passcodeId, passcode);
   await page.keyboard.press('Enter');
