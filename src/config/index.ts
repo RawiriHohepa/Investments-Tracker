@@ -1,4 +1,6 @@
 const config = {
+    CRYPTO_MINIMUM_VALUE: 0.01,
+
     COINMARKETCAP_API_URL: "https://pro-api.coinmarketcap.com",
     COINMARKETCAP_QUOTES_ENDPOINT: "/v1/cryptocurrency/quotes/latest",
 

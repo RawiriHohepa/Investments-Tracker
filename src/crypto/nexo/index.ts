@@ -2,7 +2,7 @@ import { Coin } from "../types";
 import axios from "axios";
 import { GetBalancesResponse } from "./types";
 import config from "../../config";
-import {getCmcCoins} from "../coinMarketCap";
+import { getCmcCoins } from "../coinMarketCap";
 import Platform from "../Platform";
 
 const nexo = async (nsi: string): Promise<Coin[]> => {
@@ -12,7 +12,7 @@ const nexo = async (nsi: string): Promise<Coin[]> => {
 
     const getBalancesResponse = await nexoApi(nsi);
     // Ignore balances that are zero or have very small values
-    const balances = getBalancesResponse.balances.filter(balance => balance.total_balance * balance.usd_course > 0.01);
+    const balances = getBalancesResponse.balances.filter(balance => balance.total_balance * balance.usd_course > config.CRYPTO_MINIMUM_VALUE);
 
     const coinSymbols = balances.map(balance => balance.currency_identity);
     const cmcCoins = await getCmcCoins(coinSymbols);
