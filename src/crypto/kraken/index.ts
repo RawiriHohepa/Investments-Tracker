@@ -1,8 +1,8 @@
-import { Coin } from "../types";
+import { getAmounts } from "./api";
 
-const kraken = async (): Promise<Coin[]> => {
-    // TODO implement kraken endpoint
-    return [];
+const kraken = async (): Promise<any> => {
+    // TODO retrieve coin prices, calculate values, return in Coin[] format
+    return await getAmounts();
 };
 
 export default kraken;
