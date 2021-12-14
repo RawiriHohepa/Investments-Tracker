@@ -4,6 +4,7 @@ require('dotenv').config();
 import simplicity from './simplicity/balances';
 import ird from './ird/studentLoan';
 import investNow from './investNow/balances';
+import kraken from "./crypto/kraken";
 import nexo from "./crypto/nexo";
 import exodus from "./crypto/exodus";
 import yoroi from './crypto/yoroi';
@@ -43,6 +44,7 @@ app.get('/investNow', async (req, res, next) => {
 
 const crypto = async (nexo_nsi: string, exodus_xmr_amount: number) => {
     return [
+        ...await kraken(),
         ...await nexo(nexo_nsi),
         ...await exodus(exodus_xmr_amount),
         ...await yoroi(),
@@ -61,6 +63,14 @@ app.get('/crypto', async (req, res, next) => {
 
     try {
         res.json(await crypto(nexo_nsi, parseFloat(exodus_xmr_amount)));
+    } catch (err) {
+        next(err);
+    }
+});
+
+app.get('/crypto/kraken', async (req, res, next) => {
+    try {
+        res.json(await kraken());
     } catch (err) {
         next(err);
     }
