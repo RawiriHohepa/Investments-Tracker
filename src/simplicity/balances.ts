@@ -7,7 +7,7 @@ const balances = async (): Promise<Simplicity> => {
 
   await login(page);
 
-  // FIXME For some reason this is needed for all three index to be scraped successfully.
+  // FIXME For some reason this is needed for all three balances to be scraped successfully.
   await page.screenshot({ path: 'src/simplicity/screenshot.png' });
 
   const buttonTexts = await page.$$eval(
