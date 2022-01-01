@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CmcCoin, Coin } from "../types";
+import { MarketCoin, Coin } from "../types";
 import Platform from "../Platform";
 import { GetAUstAmountResponse } from "./types";
 
@@ -40,7 +40,7 @@ const getAmount = async () => {
     return parseFloat(Result.balance) / unitsPerAUst;
 }
 
-const getCoin = async (): Promise<CmcCoin> => {
+const getCoin = async (): Promise<MarketCoin> => {
     const responseUsd = await axios.get("https://api.coingecko.com/api/v3/coins/markets?ids=anchorust&vs_currency=usd");
     const coinUsd = responseUsd.data[0];
 

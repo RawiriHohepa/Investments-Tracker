@@ -1,12 +1,12 @@
 import { Coin } from "../../types";
 import puppeteer from "puppeteer";
-import { getCmcCoin } from "../../coinMarketCap";
+import { getMarketCoin } from "../../prices";
 import Platform from "../../Platform";
 import config from "../../../config";
 
 const getAda = async (): Promise<Coin> => {
     const amount = await getAmount();
-    const coin = await getCmcCoin("ADA");
+    const coin = await getMarketCoin("ADA");
 
     return {
         coin,

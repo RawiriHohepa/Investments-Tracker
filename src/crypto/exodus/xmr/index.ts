@@ -1,9 +1,9 @@
 import { Coin } from "../../types";
-import { getCmcCoin } from "../../coinMarketCap";
+import { getMarketCoin } from "../../prices";
 import Platform from "../../Platform";
 
 const getXmr = async (xmrAmount: number): Promise<Coin> => {
-    const coin = await getCmcCoin("XMR");
+    const coin = await getMarketCoin("XMR");
     return {
         coin: coin,
         platform: Platform.EXODUS,

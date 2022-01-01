@@ -1,4 +1,4 @@
-const cmcCoinMap: { [krakenCoinName: string]: string; } = {
+const marketCoinMap: { [krakenCoinName: string]: string; } = {
     "AAVE": "AAVE",
     "ADA.S": "ADA",
     "ALGO": "ALGO",
@@ -27,4 +27,4 @@ const cmcCoinMap: { [krakenCoinName: string]: string; } = {
     "ZUSD": "ZUSD",
 };
 
-export default cmcCoinMap;
+export default marketCoinMap;

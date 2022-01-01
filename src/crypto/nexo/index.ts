@@ -2,7 +2,7 @@ import { Coin } from "../types";
 import axios from "axios";
 import { GetBalancesResponse } from "./types";
 import config from "../../config";
-import { getCmcCoins } from "../coinMarketCap";
+import { getMarketCoins } from "../prices";
 import Platform from "../Platform";
 
 const nexo = async (nsi: string): Promise<Coin[]> => {
@@ -15,19 +15,19 @@ const nexo = async (nsi: string): Promise<Coin[]> => {
     const balances = getBalancesResponse.balances.filter(balance => balance.total_balance * balance.usd_course > config.CRYPTO_MINIMUM_VALUE);
 
     const coinSymbols = balances.map(balance => balance.currency_identity);
-    const cmcCoins = await getCmcCoins(coinSymbols);
+    const marketCoins = await getMarketCoins(coinSymbols);
 
     return balances.map((balance, index) => ({
-        coin: cmcCoins[index],
+        coin: marketCoins[index],
         platform: Platform.NEXO,
         amount: balance.total_balance,
         usd: {
-            price: cmcCoins[index].usd,
-            value: balance.total_balance * cmcCoins[index].usd,
+            price: marketCoins[index].usd,
+            value: balance.total_balance * marketCoins[index].usd,
         },
         nzd: {
-            price: cmcCoins[index].nzd,
-            value: balance.total_balance * cmcCoins[index].nzd,
+            price: marketCoins[index].nzd,
+            value: balance.total_balance * marketCoins[index].nzd,
         },
     }));
 }

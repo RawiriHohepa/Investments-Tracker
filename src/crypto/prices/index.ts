@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CmcCoin } from "../types";
+import { MarketCoin } from "../types";
 import config from "../../config";
 import {
     LatestQuotesResponseUsd,
@@ -8,11 +8,11 @@ import {
     LatestQuotesResponseCoinNzd,
 } from "./types";
 
-export const getCmcCoin = async (symbol: string): Promise<CmcCoin> => {
-    return (await getCmcCoins([symbol]))[0];
+export const getMarketCoin = async (symbol: string): Promise<MarketCoin> => {
+    return (await getMarketCoins([symbol]))[0];
 }
 
-export const getCmcCoins = async (symbols: string[]): Promise<CmcCoin[]> => {
+export const getMarketCoins = async (symbols: string[]): Promise<MarketCoin[]> => {
     const usdCoins = await getUsdCoins(symbols);
     const nzdCoins = await getNzdCoins(symbols);
 
