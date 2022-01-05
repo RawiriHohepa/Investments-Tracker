@@ -49,7 +49,7 @@ const getCoin = async (): Promise<CmcCoin> => {
 
     return {
         id: -1,
-        symbol: "aust",
+        symbol: "AUST",
         name: "AnchorUST",
         slug: "anchor-ust",
         usd: coinUsd.current_price,
