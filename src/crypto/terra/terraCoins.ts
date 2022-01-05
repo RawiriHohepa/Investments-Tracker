@@ -1,17 +1,18 @@
 import axios from "axios";
-import { getCmcCoins } from "../coinMarketCap";
+import { getMarketCoins } from "../prices";
 import { Coin } from "../types";
 import Platform from "../Platform";
 import config from "../../config";
 import { GetTerraFinderResponse } from "./types";
+import coinSymbols from "../prices/coinSymbols";
 
 const denoms = {
     uluna: {
-        cmcCoin: "LUNA",
+        marketCoin: coinSymbols.LUNA,
         unitsPerCoin: 1000000,
     },
     uusd: {
-        cmcCoin: "UST",
+        marketCoin: coinSymbols.UST,
         unitsPerCoin: 1000000,
     }
 }
@@ -20,27 +21,27 @@ const terraCoins = async (): Promise<Coin[]> => {
     const response = await axios.get<GetTerraFinderResponse>(`${config.TERRA_API_URL}/${process.env.TERRA_ADDRESS}`);
     const balances = response.data.balance;
 
-    const mappedAmounts = mapToCmcCoins(balances);
-    const cmcCoins = await getCmcCoins(Object.keys(mappedAmounts));
+    const mappedAmounts = mapToMarketCoins(balances);
+    const marketCoins = await getMarketCoins(Object.keys(mappedAmounts));
 
     const coins: Coin[] = [];
-    Object.keys(mappedAmounts).forEach(coinSymbol => {
-        const cmcCoin = cmcCoins.find(c => c.symbol === coinSymbol);
-        if (!cmcCoin) {
-            throw new Error(`Unexpected error in crypto/terra/terraCoins.ts: cmcCoin not found.\ncoinSymbol=${coinSymbol}, cmcCoins=${JSON.stringify(cmcCoins)}`);
+    Object.keys(mappedAmounts).forEach(coinId => {
+        const marketCoin = marketCoins.find(c => c.id === coinId);
+        if (!marketCoin) {
+            throw new Error(`Unexpected error in crypto/terra/terraCoins.ts: marketCoin not found.\ncoinId=${coinId}\nmarketCoins=${JSON.stringify(marketCoins)}`);
         }
 
         const coin: Coin = {
-            coin: cmcCoin,
+            coin: marketCoin,
             platform: Platform.TERRA,
-            amount: mappedAmounts[coinSymbol],
+            amount: mappedAmounts[coinId],
             usd: {
-                price: cmcCoin.usd,
-                value: mappedAmounts[coinSymbol] * cmcCoin.usd,
+                price: marketCoin.usd,
+                value: mappedAmounts[coinId] * marketCoin.usd,
             },
             nzd: {
-                price: cmcCoin.nzd,
-                value: mappedAmounts[coinSymbol] * cmcCoin.nzd,
+                price: marketCoin.nzd,
+                value: mappedAmounts[coinId] * marketCoin.nzd,
             },
         }
 
@@ -52,9 +53,9 @@ const terraCoins = async (): Promise<Coin[]> => {
     return coins;
 }
 
-// Map terra coin symbols to coinmarketcap coin symbols, convert to full coin units
-const mapToCmcCoins = (unmappedAmounts: GetTerraFinderResponse["balance"]) => {
-    const mappedAmounts: { [cmcCoinName: string]: number; } = {};
+// Map terra coin symbols to corresponding market coins, convert to full coin units
+const mapToMarketCoins = (unmappedAmounts: GetTerraFinderResponse["balance"]) => {
+    const mappedAmounts: { [marketCoinName: string]: number; } = {};
     const unrecognisedCoins: string[] = [];
     unmappedAmounts.forEach(terraCoin => {
         // Ignore coins with no amount
@@ -62,7 +63,7 @@ const mapToCmcCoins = (unmappedAmounts: GetTerraFinderResponse["balance"]) => {
             return;
         }
 
-        // Find corresponding coinmarketcap symbol for given terra coin
+        // Find corresponding market coin for given terra coin
         const denomObj = denoms[terraCoin.denom];
         if (!denomObj) {
             // Collate all unmapped coins to return in an Error
@@ -70,16 +71,10 @@ const mapToCmcCoins = (unmappedAmounts: GetTerraFinderResponse["balance"]) => {
             return;
         }
 
-        const amount = parseFloat(terraCoin.available) / denomObj.unitsPerCoin
-        if (!!mappedAmounts[denomObj.cmcCoin]) {
-            // Combine kraken coins that share the same coinmarketcap symbol
-            mappedAmounts[denomObj.cmcCoin] = mappedAmounts[denomObj] + amount;
-        } else {
-            mappedAmounts[denomObj.cmcCoin] = amount;
-        }
+        mappedAmounts[denomObj.marketCoin] = parseFloat(terraCoin.available) / denomObj.unitsPerCoin;
     });
     if (unrecognisedCoins.length) {
-        throw new Error(`Terra coin(s) not recognised: [${unrecognisedCoins.join(",")}]\nPlease map the coin(s) to the corresponding coinmarketcap symbol(s) in crypto/terra/terraCoins.ts`);
+        throw new Error(`Terra coin(s) not recognised: [${unrecognisedCoins.join(",")}]\nPlease map the coin(s) to the corresponding market coin(s) in crypto/terra/terraCoins.ts`);
     }
 
     return mappedAmounts;

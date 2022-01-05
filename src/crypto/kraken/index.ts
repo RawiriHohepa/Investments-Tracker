@@ -1,6 +1,6 @@
 import { getAmounts } from "./api";
-import cmcCoinMap from "./cmcCoinMap";
-import { getCmcCoins } from "../coinMarketCap";
+import marketCoinMap from "./marketCoinMap";
+import { getMarketCoins } from "../prices";
 import { Coin } from "../types";
 import Platform from "../Platform";
 import config from "../../config";
@@ -8,8 +8,8 @@ import config from "../../config";
 const kraken = async (): Promise<Coin[]> => {
     const unmappedAmounts = await getAmounts();
 
-    // Map kraken coin symbols to coinmarketcap coin symbols
-    const mappedAmounts: { [cmcCoinName: string]: number; } = {};
+    // Map kraken coin symbols to market coin symbols
+    const mappedAmounts: { [marketCoinName: string]: number; } = {};
     const unrecognisedCoins: string[] = [];
     Object.keys(unmappedAmounts).forEach(krakenCoinName => {
         // Ignore coins with no amount
@@ -17,45 +17,45 @@ const kraken = async (): Promise<Coin[]> => {
             return;
         }
 
-        // Find corresponding coinmarketcap symbol for given kraken coin
-        const cmcCoinSymbol = cmcCoinMap[krakenCoinName];
-        if (!cmcCoinSymbol) {
+        // Find corresponding market coin for given kraken coin
+        const marketCoinId = marketCoinMap[krakenCoinName];
+        if (!marketCoinId) {
             // Collate all unmapped coins to return in an Error
             unrecognisedCoins.push(krakenCoinName);
             return;
         }
 
-        if (!!mappedAmounts[cmcCoinSymbol]) {
-            // Combine kraken coins that share the same coinmarketcap symbol
-            mappedAmounts[cmcCoinSymbol] = mappedAmounts[cmcCoinSymbol] + parseFloat(unmappedAmounts[krakenCoinName]);
+        if (!!mappedAmounts[marketCoinId]) {
+            // Combine kraken coins that share the same market coin
+            mappedAmounts[marketCoinId] = mappedAmounts[marketCoinId] + parseFloat(unmappedAmounts[krakenCoinName]);
         } else {
-            mappedAmounts[cmcCoinSymbol] = parseFloat(unmappedAmounts[krakenCoinName]);
+            mappedAmounts[marketCoinId] = parseFloat(unmappedAmounts[krakenCoinName]);
         }
     });
     if (unrecognisedCoins.length) {
-        throw new Error(`Kraken coin(s) not recognised: [${unrecognisedCoins.join(",")}]\nPlease map the coin(s) to the corresponding coinmarketcap symbol(s) in crypto/kraken/cmcCoinMap.ts`);
+        throw new Error(`Kraken coin(s) not recognised: [${unrecognisedCoins.join(",")}]\nPlease map the coin(s) to the corresponding market coin symbol(s) in crypto/kraken/marketCoinMap.ts`);
     }
 
-    const cmcCoins = await getCmcCoins(Object.keys(mappedAmounts));
+    const marketCoins = await getMarketCoins(Object.keys(mappedAmounts));
 
     const coins: Coin[] = [];
-    Object.keys(mappedAmounts).forEach(coinSymbol => {
-        const cmcCoin = cmcCoins.find(c => c.symbol === coinSymbol);
-        if (!cmcCoin) {
-            throw new Error(`Unexpected error in crypto/kraken/index.ts: cmcCoin not found.\ncoinSymbol=${coinSymbol}, cmcCoins=${JSON.stringify(cmcCoins)}`);
+    Object.keys(mappedAmounts).forEach(coinId => {
+        const marketCoin = marketCoins.find(c => c.id === coinId);
+        if (!marketCoin) {
+            throw new Error(`Unexpected error in crypto/kraken/index.ts: marketCoin not found.\ncoinId=${coinId}\nmarketCoins=${JSON.stringify(marketCoins)}`);
         }
 
         const coin: Coin = {
-            coin: cmcCoin,
+            coin: marketCoin,
             platform: Platform.KRAKEN,
-            amount: mappedAmounts[coinSymbol],
+            amount: mappedAmounts[coinId],
             usd: {
-                price: cmcCoin.usd,
-                value: mappedAmounts[coinSymbol] * cmcCoin.usd,
+                price: marketCoin.usd,
+                value: mappedAmounts[coinId] * marketCoin.usd,
             },
             nzd: {
-                price: cmcCoin.nzd,
-                value: mappedAmounts[coinSymbol] * cmcCoin.nzd,
+                price: marketCoin.nzd,
+                value: mappedAmounts[coinId] * marketCoin.nzd,
             },
         }
 

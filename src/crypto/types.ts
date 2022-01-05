@@ -1,16 +1,15 @@
 import Platform from "./Platform";
 
-export type CmcCoin = {
-    id: number;
+export type MarketCoin = {
+    id: string;
     symbol: string;
     name: string;
-    slug: string;
     usd: number;
     nzd: number;
 }
 
 export type Coin = {
-    coin: CmcCoin;
+    coin: MarketCoin;
     platform: Platform;
     amount: number;
     usd: {

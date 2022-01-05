@@ -1,8 +1,8 @@
 const config = {
     CRYPTO_MINIMUM_VALUE: 0.01,
 
-    COINMARKETCAP_API_URL: "https://pro-api.coinmarketcap.com",
-    COINMARKETCAP_QUOTES_ENDPOINT: "/v1/cryptocurrency/quotes/latest",
+    COINGECKO_API_URL: "https://api.coingecko.com/api",
+    COINGECKO_PRICES_ENDPOINT: "/v3/coins/markets",
 
     KRAKEN_API_URI: "https://api.kraken.com",
     KRAKEN_API_BALANCES_ENDPOINT: "/0/private/Balance",

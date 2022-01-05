@@ -1,15 +1,16 @@
 import axios  from "axios";
 import config from "../../../config";
 import { Coin } from "../../types";
-import { getCmcCoin } from "../../coinMarketCap";
+import { getMarketCoin } from "../../prices";
 import Platform from "../../Platform";
 import { ErgoApiResponse } from "./types";
+import coinSymbols from "../../prices/coinSymbols";
 
 const UNITS_PER_ERGO = 1000000000;
 
 const getErgo = async (): Promise<Coin> => {
     const amount = await getAmount();
-    const coin = await getCmcCoin("ERG");
+    const coin = await getMarketCoin(coinSymbols.ERGO);
 
     return {
         coin,
