@@ -2,9 +2,7 @@ export type GetAUstAmountResponse =
   | {
       data: {
         [tokenAddr: string]: {
-          Height: `${number}`;
           Result: `{\"balance\":\"${number}\"}`;
-          __typename: string;
         };
       };
     }
