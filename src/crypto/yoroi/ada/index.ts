@@ -3,10 +3,11 @@ import puppeteer from "puppeteer";
 import { getMarketCoin } from "../../prices";
 import Platform from "../../Platform";
 import config from "../../../config";
+import coinSymbols from "../../prices/coinSymbols";
 
 const getAda = async (): Promise<Coin> => {
     const amount = await getAmount();
-    const coin = await getMarketCoin("ADA");
+    const coin = await getMarketCoin(coinSymbols.ADA);
 
     return {
         coin,

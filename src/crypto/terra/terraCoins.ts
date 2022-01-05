@@ -71,13 +71,7 @@ const mapToMarketCoins = (unmappedAmounts: GetTerraFinderResponse["balance"]) =>
             return;
         }
 
-        const amount = parseFloat(terraCoin.available) / denomObj.unitsPerCoin
-        if (!!mappedAmounts[denomObj.marketCoin]) {
-            // Combine kraken coins that share the same market coin
-            mappedAmounts[denomObj.marketCoin] = mappedAmounts[denomObj] + amount;
-        } else {
-            mappedAmounts[denomObj.marketCoin] = amount;
-        }
+        mappedAmounts[denomObj.marketCoin] = parseFloat(terraCoin.available) / denomObj.unitsPerCoin;
     });
     if (unrecognisedCoins.length) {
         throw new Error(`Terra coin(s) not recognised: [${unrecognisedCoins.join(",")}]\nPlease map the coin(s) to the corresponding market coin(s) in crypto/terra/terraCoins.ts`);
