@@ -14,6 +14,8 @@ const config = {
 
     ERGO_API_URL: "https://api.ergoplatform.com/addresses",
     CARDANOSCAN_URL: "https://cardanoscan.io/stakeKey",
+
+    TERRA_API_URL: "https://fcd.terra.dev/v1/bank",
 }
 
 export default config;
