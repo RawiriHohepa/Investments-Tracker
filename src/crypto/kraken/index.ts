@@ -17,45 +17,45 @@ const kraken = async (): Promise<Coin[]> => {
             return;
         }
 
-        // Find corresponding coinmarketcap symbol for given kraken coin
-        const marketCoinSymbol = marketCoinMap[krakenCoinName];
-        if (!marketCoinSymbol) {
+        // Find corresponding market coin for given kraken coin
+        const marketCoinId = marketCoinMap[krakenCoinName];
+        if (!marketCoinId) {
             // Collate all unmapped coins to return in an Error
             unrecognisedCoins.push(krakenCoinName);
             return;
         }
 
-        if (!!mappedAmounts[marketCoinSymbol]) {
-            // Combine kraken coins that share the same coinmarketcap symbol
-            mappedAmounts[marketCoinSymbol] = mappedAmounts[marketCoinSymbol] + parseFloat(unmappedAmounts[krakenCoinName]);
+        if (!!mappedAmounts[marketCoinId]) {
+            // Combine kraken coins that share the same market coin
+            mappedAmounts[marketCoinId] = mappedAmounts[marketCoinId] + parseFloat(unmappedAmounts[krakenCoinName]);
         } else {
-            mappedAmounts[marketCoinSymbol] = parseFloat(unmappedAmounts[krakenCoinName]);
+            mappedAmounts[marketCoinId] = parseFloat(unmappedAmounts[krakenCoinName]);
         }
     });
     if (unrecognisedCoins.length) {
-        throw new Error(`Kraken coin(s) not recognised: [${unrecognisedCoins.join(",")}]\nPlease map the coin(s) to the corresponding coinmarketcap symbol(s) in crypto/kraken/marketCoinMap.ts`);
+        throw new Error(`Kraken coin(s) not recognised: [${unrecognisedCoins.join(",")}]\nPlease map the coin(s) to the corresponding market coin symbol(s) in crypto/kraken/marketCoinMap.ts`);
     }
 
     const marketCoins = await getMarketCoins(Object.keys(mappedAmounts));
 
     const coins: Coin[] = [];
-    Object.keys(mappedAmounts).forEach(coinSymbol => {
-        const marketCoin = marketCoins.find(c => c.symbol === coinSymbol);
+    Object.keys(mappedAmounts).forEach(coinId => {
+        const marketCoin = marketCoins.find(c => c.id === coinId);
         if (!marketCoin) {
-            throw new Error(`Unexpected error in crypto/kraken/index.ts: marketCoin not found.\ncoinSymbol=${coinSymbol}, marketCoins=${JSON.stringify(marketCoins)}`);
+            throw new Error(`Unexpected error in crypto/kraken/index.ts: marketCoin not found.\ncoinId=${coinId}\nmarketCoins=${JSON.stringify(marketCoins)}`);
         }
 
         const coin: Coin = {
             coin: marketCoin,
             platform: Platform.KRAKEN,
-            amount: mappedAmounts[coinSymbol],
+            amount: mappedAmounts[coinId],
             usd: {
                 price: marketCoin.usd,
-                value: mappedAmounts[coinSymbol] * marketCoin.usd,
+                value: mappedAmounts[coinId] * marketCoin.usd,
             },
             nzd: {
                 price: marketCoin.nzd,
-                value: mappedAmounts[coinSymbol] * marketCoin.nzd,
+                value: mappedAmounts[coinId] * marketCoin.nzd,
             },
         }
 

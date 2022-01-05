@@ -1,10 +1,9 @@
 import Platform from "./Platform";
 
 export type MarketCoin = {
-    id: number;
+    id: string;
     symbol: string;
     name: string;
-    slug: string;
     usd: number;
     nzd: number;
 }

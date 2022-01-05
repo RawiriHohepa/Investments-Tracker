@@ -4,14 +4,15 @@ import { Coin } from "../types";
 import Platform from "../Platform";
 import config from "../../config";
 import { GetTerraFinderResponse } from "./types";
+import coinSymbols from "../prices/coinSymbols";
 
 const denoms = {
     uluna: {
-        marketCoin: "LUNA",
+        marketCoin: coinSymbols.LUNA,
         unitsPerCoin: 1000000,
     },
     uusd: {
-        marketCoin: "UST",
+        marketCoin: coinSymbols.UST,
         unitsPerCoin: 1000000,
     }
 }
@@ -24,23 +25,23 @@ const terraCoins = async (): Promise<Coin[]> => {
     const marketCoins = await getMarketCoins(Object.keys(mappedAmounts));
 
     const coins: Coin[] = [];
-    Object.keys(mappedAmounts).forEach(coinSymbol => {
-        const marketCoin = marketCoins.find(c => c.symbol === coinSymbol);
+    Object.keys(mappedAmounts).forEach(coinId => {
+        const marketCoin = marketCoins.find(c => c.id === coinId);
         if (!marketCoin) {
-            throw new Error(`Unexpected error in crypto/terra/terraCoins.ts: marketCoin not found.\ncoinSymbol=${coinSymbol}, marketCoins=${JSON.stringify(marketCoins)}`);
+            throw new Error(`Unexpected error in crypto/terra/terraCoins.ts: marketCoin not found.\ncoinId=${coinId}\nmarketCoins=${JSON.stringify(marketCoins)}`);
         }
 
         const coin: Coin = {
             coin: marketCoin,
             platform: Platform.TERRA,
-            amount: mappedAmounts[coinSymbol],
+            amount: mappedAmounts[coinId],
             usd: {
                 price: marketCoin.usd,
-                value: mappedAmounts[coinSymbol] * marketCoin.usd,
+                value: mappedAmounts[coinId] * marketCoin.usd,
             },
             nzd: {
                 price: marketCoin.nzd,
-                value: mappedAmounts[coinSymbol] * marketCoin.nzd,
+                value: mappedAmounts[coinId] * marketCoin.nzd,
             },
         }
 
@@ -52,7 +53,7 @@ const terraCoins = async (): Promise<Coin[]> => {
     return coins;
 }
 
-// Map terra coin symbols to corresponding market coin symbols, convert to full coin units
+// Map terra coin symbols to corresponding market coins, convert to full coin units
 const mapToMarketCoins = (unmappedAmounts: GetTerraFinderResponse["balance"]) => {
     const mappedAmounts: { [marketCoinName: string]: number; } = {};
     const unrecognisedCoins: string[] = [];
@@ -62,7 +63,7 @@ const mapToMarketCoins = (unmappedAmounts: GetTerraFinderResponse["balance"]) =>
             return;
         }
 
-        // Find corresponding coinmarketcap symbol for given terra coin
+        // Find corresponding market coin for given terra coin
         const denomObj = denoms[terraCoin.denom];
         if (!denomObj) {
             // Collate all unmapped coins to return in an Error
@@ -72,14 +73,14 @@ const mapToMarketCoins = (unmappedAmounts: GetTerraFinderResponse["balance"]) =>
 
         const amount = parseFloat(terraCoin.available) / denomObj.unitsPerCoin
         if (!!mappedAmounts[denomObj.marketCoin]) {
-            // Combine kraken coins that share the same coinmarketcap symbol
+            // Combine kraken coins that share the same market coin
             mappedAmounts[denomObj.marketCoin] = mappedAmounts[denomObj] + amount;
         } else {
             mappedAmounts[denomObj.marketCoin] = amount;
         }
     });
     if (unrecognisedCoins.length) {
-        throw new Error(`Terra coin(s) not recognised: [${unrecognisedCoins.join(",")}]\nPlease map the coin(s) to the corresponding coinmarketcap symbol(s) in crypto/terra/terraCoins.ts`);
+        throw new Error(`Terra coin(s) not recognised: [${unrecognisedCoins.join(",")}]\nPlease map the coin(s) to the corresponding market coin(s) in crypto/terra/terraCoins.ts`);
     }
 
     return mappedAmounts;

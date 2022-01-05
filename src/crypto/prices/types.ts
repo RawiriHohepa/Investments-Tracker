@@ -1,66 +1,28 @@
-type BaseLatestQuotesResponse<Type> = {
-    "status": {
-        "timestamp": string,
-        "error_code": number,
-        "error_message": string,
-        "elapsed": number,
-        "credit_count": number,
-        "notice": string
-    },
-    "data": {
-        [symbol: string]: Type,
-    }
-}
-
-type BaseLatestQuotesResponseCoin = {
-    "id": number,
-    "name": string,
-    "symbol": string,
-    "slug": string,
-    "num_market_pairs": number,
-    "date_added": string,
-    "tags": string[],
-    "max_supply": number,
-    "circulating_supply": number,
-    "total_supply": number,
-    "is_active": number,
-    "platform": {
-        id: number,
-        name: string,
-        symbol: string,
-        slug: string,
-        token_address: string
-    },
-    "cmc_rank": number,
-    "is_fiat": number,
-    "last_updated": string,
-}
-
-type BaseLatestQuotesResponseQuote = {
-    "price": number,
-    "volume_24h": number,
-    "percent_change_1h": number,
-    "percent_change_24h": number,
-    "percent_change_7d": number,
-    "percent_change_30d": number,
-    "percent_change_60d": number,
-    "percent_change_90d": number,
-    "market_cap": number,
-    "market_cap_dominance": number,
-    "fully_diluted_market_cap": number,
-    "last_updated": string
-}
-
-export type LatestQuotesResponseUsd = BaseLatestQuotesResponse<LatestQuotesResponseCoinUsd>;
-export type LatestQuotesResponseNzd = BaseLatestQuotesResponse<LatestQuotesResponseCoinNzd>;
-
-export type LatestQuotesResponseCoinUsd = BaseLatestQuotesResponseCoin & {
-    "quote": {
-        "USD": BaseLatestQuotesResponseQuote
-    }
-}
-export type LatestQuotesResponseCoinNzd = BaseLatestQuotesResponseCoin & {
-    "quote": {
-        "NZD": BaseLatestQuotesResponseQuote
-    }
+export type GetMarketCoinsResponse = {
+    id: string;
+    symbol: string;
+    name: string;
+    image: string;
+    current_price: number;
+    market_cap: number;
+    market_cap_rank: number;
+    fully_diluted_valuation: number;
+    total_volume: number;
+    high_24h: number;
+    low_24h: number;
+    price_change_24h: number;
+    price_change_percentage_24h: number;
+    market_cap_change_24h: number;
+    market_cap_change_percentage_24h: number;
+    circulating_supply: number;
+    total_supply: number;
+    max_supply: number;
+    ath: number;
+    ath_change_percentage: number;
+    ath_date: string;
+    atl: number;
+    atl_change_percentage: number;
+    atl_date: string;
+    roi: null,
+    last_updated: string;
 }
