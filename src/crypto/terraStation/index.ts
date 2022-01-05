@@ -1,8 +1,9 @@
 import aUst from "./aUst";
+import { Coin } from "../types";
 
 
-const terraStation = async (): Promise<any> => {
-    return await aUst();
+const terraStation = async (): Promise<Coin[]> => {
+    return [await aUst()];
 }
 
 
