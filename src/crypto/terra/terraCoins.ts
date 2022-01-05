@@ -3,6 +3,7 @@ import { getCmcCoins } from "../coinMarketCap";
 import { Coin } from "../types";
 import Platform from "../Platform";
 import config from "../../config";
+import { GetTerraFinderResponse } from "./types";
 
 const denoms = {
     uluna: {
@@ -16,8 +17,7 @@ const denoms = {
 }
 
 const terraCoins = async (): Promise<Coin[]> => {
-    // TODO add schema for response
-    const response = await axios.get(`${config.TERRA_API_URL}/${process.env.TERRA_ADDRESS}`);
+    const response = await axios.get<GetTerraFinderResponse>(`${config.TERRA_API_URL}/${process.env.TERRA_ADDRESS}`);
     const balances = response.data.balance;
 
     const mappedAmounts = mapToCmcCoins(balances);
@@ -53,7 +53,7 @@ const terraCoins = async (): Promise<Coin[]> => {
 }
 
 // Map terra coin symbols to coinmarketcap coin symbols, convert to full coin units
-const mapToCmcCoins = (unmappedAmounts) => {
+const mapToCmcCoins = (unmappedAmounts: GetTerraFinderResponse["balance"]) => {
     const mappedAmounts: { [cmcCoinName: string]: number; } = {};
     const unrecognisedCoins: string[] = [];
     unmappedAmounts.forEach(terraCoin => {
@@ -66,7 +66,7 @@ const mapToCmcCoins = (unmappedAmounts) => {
         const denomObj = denoms[terraCoin.denom];
         if (!denomObj) {
             // Collate all unmapped coins to return in an Error
-            unrecognisedCoins.push(terraCoin);
+            unrecognisedCoins.push(terraCoin.denom);
             return;
         }
 

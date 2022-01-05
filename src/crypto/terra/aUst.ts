@@ -1,6 +1,7 @@
 import axios from "axios";
 import { CmcCoin, Coin } from "../types";
 import Platform from "../Platform";
+import { GetAUstAmountResponse } from "./types";
 
 const aUstAddr = "terra1hzh9vpxhsk8253se0vv5jj6etdvxu3nv8z07zu";
 const unitsPerAUst = 1000000;
@@ -26,19 +27,16 @@ const aUst = async (): Promise<Coin> => {
 }
 
 const getAmount = async () => {
-    // TODO add response schema from https://mantle.terra.dev/
-    const response = await axios.post("https://mantle.terra.dev/", {
+    const response = await axios.post<GetAUstAmountResponse>("https://mantle.terra.dev/", {
         query,
         variables: {},
     });
-
-    if (response.data.errors && response.data.errors.length) {
-        // TODO handle error case
-        return response.data.errors;
+    if (!response.data.data) {
+        throw new Error(response.data.errors.join("; "));
     }
 
     const obj = response.data.data[aUstAddr];
-    const Result = JSON.parse(obj.Result);
+    const Result: { balance: string } = JSON.parse(obj.Result);
     return parseFloat(Result.balance) / unitsPerAUst;
 }
 
