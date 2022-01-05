@@ -3,9 +3,9 @@ import terraCoins from "./terraCoins";
 import aUst from "./aUst";
 
 
-const terraStation = async (): Promise<Coin[]> => {
+const terra = async (): Promise<Coin[]> => {
     return [...await terraCoins(), await aUst()];
 }
 
 
-export default terraStation;
+export default terra;

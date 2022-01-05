@@ -3,7 +3,7 @@ enum Platform {
     NEXO = "nexo",
     EXODUS = "exodus",
     YOROI = "yoroi",
-    TERRA_STATION = "terra-station",
+    TERRA = "terra",
 }
 
 export default Platform;

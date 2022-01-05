@@ -8,7 +8,7 @@ import kraken from "./crypto/kraken";
 import nexo from "./crypto/nexo";
 import exodus from "./crypto/exodus";
 import yoroi from './crypto/yoroi';
-import terraStation from "./crypto/terraStation";
+import terra from "./crypto/terra";
 import {Coin} from "./crypto/types";
 
 // Setup Express
@@ -50,7 +50,7 @@ const crypto = async (nexo_nsi: string, exodus_xmr_amount: number) => {
         ...await nexo(nexo_nsi),
         ...await exodus(exodus_xmr_amount),
         ...await yoroi(),
-        ...await terraStation(),
+        ...await terra(),
     ];
 };
 
@@ -115,9 +115,9 @@ app.get('/crypto/yoroi', async (req, res, next) => {
     }
 });
 
-app.get('/crypto/terra-station', async (req, res, next) => {
+app.get('/crypto/terra', async (req, res, next) => {
     try {
-        res.json(await terraStation());
+        res.json(await terra());
     } catch (err) {
         next(err);
     }

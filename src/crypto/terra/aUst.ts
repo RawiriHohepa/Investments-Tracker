@@ -4,7 +4,7 @@ import Platform from "../Platform";
 
 const aUstAddr = "terra1hzh9vpxhsk8253se0vv5jj6etdvxu3nv8z07zu";
 const unitsPerAUst = 1000000;
-const query = `{\n  ${aUstAddr}: WasmContractsContractAddressStore(\n    ContractAddress: \"${aUstAddr}\"\n    QueryMsg: \"{\\\"balance\\\":{\\\"address\\\":\\\"${process.env.TERRA_STATION_ADDRESS}\\\"}}\"\n  ) {\n    Height\n    Result\n    __typename\n  }\n  }\n`;
+const query = `{\n  ${aUstAddr}: WasmContractsContractAddressStore(\n    ContractAddress: \"${aUstAddr}\"\n    QueryMsg: \"{\\\"balance\\\":{\\\"address\\\":\\\"${process.env.TERRA_ADDRESS}\\\"}}\"\n  ) {\n    Height\n    Result\n    __typename\n  }\n  }\n`;
 
 const aUst = async (): Promise<Coin> => {
     const amount = await getAmount();
@@ -12,7 +12,7 @@ const aUst = async (): Promise<Coin> => {
 
     return {
         coin,
-        platform: Platform.TERRA_STATION,
+        platform: Platform.TERRA,
         amount,
         usd: {
             price: coin.usd,

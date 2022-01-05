@@ -17,7 +17,7 @@ const denoms = {
 
 const terraCoins = async (): Promise<Coin[]> => {
     // TODO add schema for response
-    const response = await axios.get(`https://fcd.terra.dev/v1/bank/${process.env.TERRA_STATION_ADDRESS}`);
+    const response = await axios.get(`${config.TERRA_API_URL}/${process.env.TERRA_ADDRESS}`);
     const balances = response.data.balance;
 
     const mappedAmounts = mapToCmcCoins(balances);
@@ -27,12 +27,12 @@ const terraCoins = async (): Promise<Coin[]> => {
     Object.keys(mappedAmounts).forEach(coinSymbol => {
         const cmcCoin = cmcCoins.find(c => c.symbol === coinSymbol);
         if (!cmcCoin) {
-            throw new Error(`Unexpected error in crypto/terraStation/terraCoins.ts: cmcCoin not found.\ncoinSymbol=${coinSymbol}, cmcCoins=${JSON.stringify(cmcCoins)}`);
+            throw new Error(`Unexpected error in crypto/terra/terraCoins.ts: cmcCoin not found.\ncoinSymbol=${coinSymbol}, cmcCoins=${JSON.stringify(cmcCoins)}`);
         }
 
         const coin: Coin = {
             coin: cmcCoin,
-            platform: Platform.TERRA_STATION,
+            platform: Platform.TERRA,
             amount: mappedAmounts[coinSymbol],
             usd: {
                 price: cmcCoin.usd,
@@ -79,7 +79,7 @@ const mapToCmcCoins = (unmappedAmounts) => {
         }
     });
     if (unrecognisedCoins.length) {
-        throw new Error(`Terra coin(s) not recognised: [${unrecognisedCoins.join(",")}]\nPlease map the coin(s) to the corresponding coinmarketcap symbol(s) in crypto/terraStation/terraCoins.ts`);
+        throw new Error(`Terra coin(s) not recognised: [${unrecognisedCoins.join(",")}]\nPlease map the coin(s) to the corresponding coinmarketcap symbol(s) in crypto/terra/terraCoins.ts`);
     }
 
     return mappedAmounts;
