@@ -1,34 +1,32 @@
 import axios from "axios";
-import { Coin, MarketCoin } from "../types";
+import { Coin, CoinInfo, CoinWithoutPrice } from "../types";
 import config from "../../config";
 import { GetMarketCoinsResponse } from "./types";
-import Platform from "../Platform";
 
 export const getCoins = async (
-    mappedAmounts: { [coin: string]: number },
-    platform: Platform,
+    coinsWithoutPrices: CoinWithoutPrice[],
 ): Promise<Coin[]> => {
-    const marketCoins = await getMarketPrices(Object.keys(mappedAmounts));
+    const coinInfos = await getCoinInfos(coinsWithoutPrices.map(coin => coin.id));
 
     const coins: Coin[] = [];
-    Object.keys(mappedAmounts).forEach(coinId => {
-        const marketCoin = marketCoins.find(c => c.id === coinId);
-        if (!marketCoin) {
+    coinsWithoutPrices.forEach(coinWithoutPrice => {
+        const coinInfo = coinInfos.find(c => c.id === coinWithoutPrice.id);
+        if (!coinInfo) {
             // TODO update error message
-            throw new Error(`Unexpected error: marketCoin not found.\ncoinId=${coinId}\nmarketCoins=${JSON.stringify(marketCoins)}`);
+            throw new Error(`Unexpected error: marketCoin not found.\ncoinId=${coinWithoutPrice.id}\nmarketCoins=${JSON.stringify({ coinsWithoutPrices, coinInfos })}`);
         }
 
         const coin: Coin = {
-            coin: marketCoin,
-            platform,
-            amount: mappedAmounts[coinId],
+            coin: coinInfo,
+            platform: coinWithoutPrice.platform,
+            amount: coinWithoutPrice.amount,
             usd: {
-                price: marketCoin.usd,
-                value: mappedAmounts[coinId] * marketCoin.usd,
+                price: coinInfo.usd,
+                value: coinInfo.usd * coinWithoutPrice.amount,
             },
             nzd: {
-                price: marketCoin.nzd,
-                value: mappedAmounts[coinId] * marketCoin.nzd,
+                price: coinInfo.nzd,
+                value: coinInfo.nzd * coinWithoutPrice.amount,
             },
         }
 
@@ -40,7 +38,7 @@ export const getCoins = async (
     return coins;
 }
 
-const getMarketPrices = async (symbols: string[]): Promise<MarketCoin[]> => {
+const getCoinInfos = async (symbols: string[]): Promise<CoinInfo[]> => {
     const usdCoins = await getCoinGeckoPrices(symbols, "usd");
     const nzdCoins = await getCoinGeckoPrices(symbols, "nzd");
 

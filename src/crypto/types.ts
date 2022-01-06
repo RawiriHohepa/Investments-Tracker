@@ -1,6 +1,13 @@
 import Platform from "./Platform";
+import CoinId from "./CoinId";
 
-export type MarketCoin = {
+export type CoinWithoutPrice = {
+    id: CoinId;
+    platform: Platform;
+    amount: number;
+}
+
+export type CoinInfo = {
     id: string;
     symbol: string;
     name: string;
@@ -9,7 +16,7 @@ export type MarketCoin = {
 }
 
 export type Coin = {
-    coin: MarketCoin;
+    coin: CoinInfo;
     platform: Platform;
     amount: number;
     usd: {

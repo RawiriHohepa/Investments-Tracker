@@ -1,13 +1,15 @@
 import { Coin } from "../types";
-import coinSymbols from "../prices/coinSymbols";
+import CoinId from "../CoinId";
 import { getCoins } from "../prices";
 import Platform from "../Platform";
 
-const exodus = async (xmrAmount: number): Promise<Coin[]> => {
-    const mappedAmounts = {
-        [coinSymbols.XMR]: xmrAmount
-    };
-    return await getCoins(mappedAmounts, Platform.EXODUS);
-};
+const exodus = async (xmrAmount: number): Promise<Coin[]> =>
+    await getCoins([
+        {
+            id: CoinId.XMR,
+            platform: Platform.EXODUS,
+            amount: xmrAmount,
+        },
+    ]);
 
 export default exodus;
