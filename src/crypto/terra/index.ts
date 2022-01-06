@@ -1,12 +1,11 @@
-import { Coin, CoinWithoutPrice } from "../types";
+import { CoinWithoutPrice } from "../types";
 import terraCoins from "./terraCoins";
 import aUst from "./aUst";
-import { getCoins } from "../prices";
 import Platform from "../Platform";
 import CoinId from "../CoinId";
 
-const terra = async (): Promise<Coin[]> => {
-    const coinsWithoutPrices: CoinWithoutPrice[] = [
+const terra = async (): Promise<CoinWithoutPrice[]> => {
+    return [
         ...await terraCoins(),
         {
             id: CoinId.AUST,
@@ -14,7 +13,6 @@ const terra = async (): Promise<Coin[]> => {
             amount: await aUst(),
         },
     ];
-    return await getCoins(coinsWithoutPrices);
 }
 
 

@@ -1,15 +1,13 @@
 import { getAmounts } from "./api";
 import marketCoinMap from "./marketCoinMap";
-import { getCoins } from "../prices";
-import { Coin, CoinWithoutPrice } from "../types";
+import { CoinWithoutPrice } from "../types";
 import { GetAmountsResponse } from "./types";
 import CoinId from "../CoinId";
 import Platform from "../Platform";
 
-const kraken = async (): Promise<Coin[]> => {
+const kraken = async (): Promise<CoinWithoutPrice[]> => {
     const unmappedAmounts = await getAmounts();
-    const coinsWithoutPrices = mapAmounts(unmappedAmounts);
-    return await getCoins(coinsWithoutPrices);
+    return mapAmounts(unmappedAmounts);
 }
 
 const mapAmounts = (unmappedAmounts: GetAmountsResponse): CoinWithoutPrice[] => {

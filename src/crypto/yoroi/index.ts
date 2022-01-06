@@ -1,12 +1,11 @@
-import { Coin, CoinWithoutPrice } from "../types";
+import { CoinWithoutPrice } from "../types";
 import getAda from "./ada";
 import getErgo from "./ergo";
 import CoinId from "../CoinId";
-import { getCoins } from "../prices";
 import Platform from "../Platform";
 
-const yoroi = async (): Promise<Coin[]> => {
-    const coinsWithoutPrices: CoinWithoutPrice[] = [
+const yoroi = async (): Promise<CoinWithoutPrice[]> => {
+    return [
         {
             id: CoinId.ADA,
             platform: Platform.YOROI,
@@ -18,7 +17,6 @@ const yoroi = async (): Promise<Coin[]> => {
             amount: await getErgo(),
         },
     ];
-    return await getCoins(coinsWithoutPrices);
 };
 
 export default yoroi;

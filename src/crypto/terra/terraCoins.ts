@@ -23,9 +23,9 @@ const denoms: { [s: string]: DenomMapping } = {
 
 const terraCoins = async (): Promise<CoinWithoutPrice[]> => {
     const response = await axios.get<GetTerraFinderResponse>(`${config.TERRA_API_URL}/${process.env.TERRA_ADDRESS}`);
-    const balances = response.data.balance;
+    const unmappedAmounts = response.data.balance;
 
-    return mapToMarketCoins(balances);
+    return mapToMarketCoins(unmappedAmounts);
 }
 
 // Map terra coin symbols to corresponding market coins, convert to full coin units

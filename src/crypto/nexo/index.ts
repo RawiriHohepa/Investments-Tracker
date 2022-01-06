@@ -1,4 +1,4 @@
-import { Coin, CoinWithoutPrice } from "../types";
+import { CoinWithoutPrice } from "../types";
 import axios from "axios";
 import {
     GetBalancesResponse,
@@ -6,21 +6,19 @@ import {
     GetBalancesResponsePayload
 } from "./types";
 import config from "../../config";
-import { getCoins } from "../prices";
 import Platform from "../Platform";
 import CoinId from "../CoinId";
 
-const nexo = async (nsi: string): Promise<Coin[]> => {
+const nexo = async (nsi: string): Promise<CoinWithoutPrice[]> => {
     if (!process.env.NEXO_ZLCMID || !process.env.NEXO_CF_CLEARANCE) {
         throw new Error("Environment Variables not set: NEXO_ZLCMID and/or NEXO_CF_CLEARANCE")
     }
 
     const getBalancesResponse = await nexoApi(nsi);
-    const coinsWithoutPrices: CoinWithoutPrice[] = mapAmounts(getBalancesResponse);
-    return await getCoins(coinsWithoutPrices);
+    return mapAmounts(getBalancesResponse);
 }
 
-const mapAmounts = (getBalancesResponse): CoinWithoutPrice[] => {
+const mapAmounts = (getBalancesResponse: GetBalancesResponsePayload): CoinWithoutPrice[] => {
     const coinsWithoutPrices: CoinWithoutPrice[] = [];
     const unrecognisedCoins: string[] = [];
     getBalancesResponse.balances.forEach((balance: GetBalancesResponseBalances) => {
