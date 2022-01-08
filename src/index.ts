@@ -9,7 +9,7 @@ import nexo from "./crypto/nexo";
 import exodus from "./crypto/exodus";
 import yoroi from './crypto/yoroi';
 import terra from "./crypto/terra";
-import {Coin} from "./crypto/types";
+import { getCoins } from "./crypto/prices";
 
 // Setup Express
 const app = express();
@@ -45,13 +45,14 @@ app.get('/investNow', async (req, res, next) => {
 });
 
 const crypto = async (nexo_nsi: string, exodus_xmr_amount: number) => {
-    return [
+    const coinsWithoutPrices = [
         ...await kraken(),
         ...await nexo(nexo_nsi),
         ...await exodus(exodus_xmr_amount),
         ...await yoroi(),
         ...await terra(),
     ];
+    return await getCoins(coinsWithoutPrices);
 };
 
 app.get('/crypto', async (req, res, next) => {
@@ -73,7 +74,8 @@ app.get('/crypto', async (req, res, next) => {
 
 app.get('/crypto/kraken', async (req, res, next) => {
     try {
-        res.json(await kraken());
+        const coinsWithoutPrices = await kraken();
+        res.json(await getCoins(coinsWithoutPrices));
     } catch (err) {
         next(err);
     }
@@ -87,7 +89,8 @@ app.get('/crypto/nexo', async (req, res, next) => {
     }
 
     try {
-        res.json(await nexo(nsi));
+        const coinsWithoutPrices = await nexo(nsi);
+        res.json(await getCoins(coinsWithoutPrices));
     } catch (err) {
         next(err);
     }
@@ -101,7 +104,8 @@ app.get('/crypto/exodus', async (req, res, next) => {
     }
 
     try {
-        res.json(await exodus(parseFloat(xmr_amount)));
+        const coinsWithoutPrices = await exodus(parseFloat(xmr_amount));
+        res.json(await getCoins(coinsWithoutPrices));
     } catch (err) {
         next(err);
     }
@@ -109,7 +113,8 @@ app.get('/crypto/exodus', async (req, res, next) => {
 
 app.get('/crypto/yoroi', async (req, res, next) => {
     try {
-        res.json(await yoroi());
+        const coinsWithoutPrices = await yoroi();
+        res.json(await getCoins(coinsWithoutPrices));
     } catch (err) {
         next(err);
     }
@@ -117,7 +122,8 @@ app.get('/crypto/yoroi', async (req, res, next) => {
 
 app.get('/crypto/terra', async (req, res, next) => {
     try {
-        res.json(await terra());
+        const coinsWithoutPrices = await terra();
+        res.json(await getCoins(coinsWithoutPrices));
     } catch (err) {
         next(err);
     }

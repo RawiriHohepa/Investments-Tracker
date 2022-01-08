@@ -1,30 +1,7 @@
-import { Coin } from "../../types";
 import puppeteer from "puppeteer";
-import { getMarketCoin } from "../../prices";
-import Platform from "../../Platform";
 import config from "../../../config";
-import coinSymbols from "../../prices/coinSymbols";
 
-const getAda = async (): Promise<Coin> => {
-    const amount = await getAmount();
-    const coin = await getMarketCoin(coinSymbols.ADA);
-
-    return {
-        coin,
-        platform: Platform.YOROI,
-        amount,
-        usd: {
-            price: coin.usd,
-            value: amount * coin.usd,
-        },
-        nzd: {
-            price: coin.nzd,
-            value: amount * coin.nzd,
-        },
-    }
-}
-
-const getAmount = async () => {
+const getAda = async (): Promise<number> => {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
     await page.setViewport({ width: 1920, height: 1080 });

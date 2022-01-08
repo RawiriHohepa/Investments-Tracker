@@ -1,73 +1,54 @@
-import { Coin } from "../types";
+import { CoinWithoutPrice } from "../types";
 import axios from "axios";
-import { GetBalancesResponse } from "./types";
+import {
+    GetBalancesResponse,
+    GetBalancesResponseBalances,
+    GetBalancesResponsePayload
+} from "./types";
 import config from "../../config";
-import { getMarketCoins } from "../prices";
 import Platform from "../Platform";
-import coinSymbols from "../prices/coinSymbols";
+import CoinId from "../CoinId";
 
-const nexo = async (nsi: string): Promise<Coin[]> => {
+const nexo = async (nsi: string): Promise<CoinWithoutPrice[]> => {
     if (!process.env.NEXO_ZLCMID || !process.env.NEXO_CF_CLEARANCE) {
         throw new Error("Environment Variables not set: NEXO_ZLCMID and/or NEXO_CF_CLEARANCE")
     }
 
     const getBalancesResponse = await nexoApi(nsi);
+    return mapAmounts(getBalancesResponse);
+}
 
-    // Map nexo coin symbols to market coin symbols
-    const mappedAmounts: { [marketCoinName: string]: number; } = {};
+const mapAmounts = (getBalancesResponse: GetBalancesResponsePayload): CoinWithoutPrice[] => {
+    const coinsWithoutPrices: CoinWithoutPrice[] = [];
     const unrecognisedCoins: string[] = [];
-    getBalancesResponse.balances.forEach(balance => {
+    getBalancesResponse.balances.forEach((balance: GetBalancesResponseBalances) => {
         // Ignore coins with no amount
         if (!balance.total_balance) {
             return;
         }
 
         // Find corresponding market coin for given nexo coin
-        const marketCoinId = coinSymbols[balance.currency_identity];
-        if (!marketCoinId) {
+        const coinId: CoinId | undefined = CoinId[balance.currency_identity];
+        if (!coinId) {
             // Collate all unmapped coins to return in an Error
             unrecognisedCoins.push(balance.currency_identity);
             return;
         }
 
-        mappedAmounts[marketCoinId] = balance.total_balance;
+        coinsWithoutPrices.push({
+            id: coinId,
+            platform: Platform.NEXO,
+            amount: balance.total_balance,
+        });
     });
     if (unrecognisedCoins.length) {
-        throw new Error(`Nexo coin(s) not recognised: [${unrecognisedCoins.join(",")}]\nPlease map the coin(s) to the corresponding market coin symbol(s) in crypto/coinSymbols.ts`);
+        throw new Error(`Nexo coin(s) not recognised: [${unrecognisedCoins.join(",")}]\nPlease map the coin(s) to the corresponding market coin symbol(s) in crypto/coinId.ts`);
     }
 
-    const marketCoins = await getMarketCoins(Object.keys(mappedAmounts));
-
-    const coins: Coin[] = [];
-    Object.keys(mappedAmounts).forEach(coinId => {
-        const marketCoin = marketCoins.find(c => c.id === coinId);
-        if (!marketCoin) {
-            throw new Error(`Unexpected error in crypto/nexo/index.ts: marketCoin not found.\ncoinId=${coinId}\nmarketCoins=${JSON.stringify(marketCoins)}`);
-        }
-
-        const coin: Coin = {
-            coin: marketCoin,
-            platform: Platform.NEXO,
-            amount: mappedAmounts[coinId],
-            usd: {
-                price: marketCoin.usd,
-                value: mappedAmounts[coinId] * marketCoin.usd,
-            },
-            nzd: {
-                price: marketCoin.nzd,
-                value: mappedAmounts[coinId] * marketCoin.nzd,
-            },
-        }
-
-        // Do not return coins with very small values
-        if (coin.usd.value > config.CRYPTO_MINIMUM_VALUE) {
-            coins.push(coin);
-        }
-    });
-    return coins;
+    return coinsWithoutPrices;
 }
 
-const nexoApi = async (nsi: string) => {
+const nexoApi = async (nsi: string): Promise<GetBalancesResponsePayload> => {
     const cookie = `__zlcmid=${process.env.NEXO_ZLCMID}; cf_clearance=${process.env.NEXO_CF_CLEARANCE}; nsi=${nsi};`;
     const url = "" + config.NEXO_API_URL + config.NEXO_API_BALANCES_ENDPOINT;
     const res = await axios.post<GetBalancesResponse>(url, {}, {
