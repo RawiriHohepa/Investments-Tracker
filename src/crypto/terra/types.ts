@@ -1,33 +1,35 @@
 export type GetAUstAmountResponse =
-  | {
-      data: {
+    | {
+    data: {
         [tokenAddr: string]: {
-          Result: `{\"balance\":\"${number}\"}`;
+            Result: `{\"balance\":\"${number}\"}`;
         };
-      };
-    }
-  | {
-      data: null;
-      errors: {
+    };
+}
+    | {
+    data: null;
+    errors: {
         message: string;
         locations: {
-          line: number;
-          column: number;
+            line: number;
+            column: number;
         }[];
-      }[];
-    };
+    }[];
+};
 
-export type GetTerraFinderResponse = {
-  balance: {
-      denom: string;
-      available: `${number}`;
-      delegatedVesting: `${number}`;
-      delegatable: `${number}`;
-      freedVesting: `${number}`;
-      unbonding: `${number}`;
-      remainingVesting: `${number}`;
-  }[];
-  vesting: [];
-  delegations: [];
-  unbondings: [];
+export type GetAmountsResponse = {
+    balance: GetAmountsResponseBalance[];
+    vesting: [];
+    delegations: [];
+    unbondings: [];
+};
+
+export type GetAmountsResponseBalance = {
+    denom: string;
+    available: `${number}`;
+    delegatedVesting: `${number}`;
+    delegatable: `${number}`;
+    freedVesting: `${number}`;
+    unbonding: `${number}`;
+    remainingVesting: `${number}`;
 };

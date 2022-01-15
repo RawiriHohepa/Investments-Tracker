@@ -1,10 +1,10 @@
-export type GetBalancesResponse = {
+export type NexoResponse<Data> = {
     access: boolean;
-    payload: GetBalancesResponsePayload;
+    payload: Data;
 }
 
-export type GetBalancesResponsePayload = {
-    balances: GetBalancesResponseBalances[];
+export type GetAmountsResponse = {
+    balances: GetAmountsResponseBalance[];
     total_collateral_value: number;
     total_amount_in_credit_wallet_in_usd: number;
     total_amount_in_deposit_wallet_in_usd: number;
@@ -40,7 +40,7 @@ export type GetBalancesResponsePayload = {
     total_fiatx_balance_in_usd: number;
 }
 
-export type GetBalancesResponseBalances = {
+export type GetAmountsResponseBalance = {
     collateral_id: number;
     currency_id: number;
     currency_identity: string;

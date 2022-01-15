@@ -4,132 +4,20 @@ require('dotenv').config();
 import simplicity from './simplicity/balances';
 import ird from './ird/studentLoan';
 import investNow from './investNow/balances';
-import kraken from "./crypto/kraken";
-import nexo from "./crypto/nexo";
-import exodus from "./crypto/exodus";
-import yoroi from './crypto/yoroi';
-import terra from "./crypto/terra";
-import { getCoins } from "./crypto/prices";
+import cryptoRoutes, { crypto } from "./crypto";
 
 // Setup Express
 const app = express();
+const router = express.Router();
 const port = process.env.PORT || 3000 || 3001 || 3002;
 
 // Setup JSON parsing for the request body
 app.use(express.json());
+app.use('/api', router);
 
 // Setup our routes.
 
-app.get('/simplicity', async (req, res, next) => {
-    try {
-        res.json(await simplicity());
-    } catch (err) {
-        next(err);
-    }
-});
-
-app.get('/ird', async (req, res, next) => {
-    try {
-        res.json(await ird());
-    } catch (err) {
-        next(err);
-    }
-});
-
-app.get('/investNow', async (req, res, next) => {
-    try {
-        res.json(await investNow());
-    } catch (err) {
-        next(err);
-    }
-});
-
-const crypto = async (nexo_nsi: string, exodus_xmr_amount: number) => {
-    const coinsWithoutPrices = [
-        ...await kraken(),
-        ...await nexo(nexo_nsi),
-        ...await exodus(exodus_xmr_amount),
-        ...await yoroi(),
-        ...await terra(),
-    ];
-    return await getCoins(coinsWithoutPrices);
-};
-
-app.get('/crypto', async (req, res, next) => {
-    const { nexo_nsi, exodus_xmr_amount } = req.query;
-    if (
-        (typeof nexo_nsi !== "string" || !nexo_nsi)
-        || (typeof exodus_xmr_amount !== "string" || !exodus_xmr_amount || isNaN(parseFloat(exodus_xmr_amount)))
-    ) {
-        res.sendStatus(400);
-        return;
-    }
-
-    try {
-        res.json(await crypto(nexo_nsi, parseFloat(exodus_xmr_amount)));
-    } catch (err) {
-        next(err);
-    }
-});
-
-app.get('/crypto/kraken', async (req, res, next) => {
-    try {
-        const coinsWithoutPrices = await kraken();
-        res.json(await getCoins(coinsWithoutPrices));
-    } catch (err) {
-        next(err);
-    }
-});
-
-app.get('/crypto/nexo', async (req, res, next) => {
-    const { nsi } = req.query;
-    if (typeof nsi !== "string" || !nsi) {
-        res.sendStatus(400);
-        return;
-    }
-
-    try {
-        const coinsWithoutPrices = await nexo(nsi);
-        res.json(await getCoins(coinsWithoutPrices));
-    } catch (err) {
-        next(err);
-    }
-});
-
-app.get('/crypto/exodus', async (req, res, next) => {
-    const { xmr_amount } = req.query;
-    if (typeof xmr_amount !== "string" || !xmr_amount || isNaN(parseFloat(xmr_amount))) {
-        res.sendStatus(400);
-        return;
-    }
-
-    try {
-        const coinsWithoutPrices = await exodus(parseFloat(xmr_amount));
-        res.json(await getCoins(coinsWithoutPrices));
-    } catch (err) {
-        next(err);
-    }
-});
-
-app.get('/crypto/yoroi', async (req, res, next) => {
-    try {
-        const coinsWithoutPrices = await yoroi();
-        res.json(await getCoins(coinsWithoutPrices));
-    } catch (err) {
-        next(err);
-    }
-});
-
-app.get('/crypto/terra', async (req, res, next) => {
-    try {
-        const coinsWithoutPrices = await terra();
-        res.json(await getCoins(coinsWithoutPrices));
-    } catch (err) {
-        next(err);
-    }
-});
-
-app.get('/api', async (req, res, next) => {
+router.get('/', async (req, res, next) => {
     const { nexo_nsi, exodus_xmr_amount } = req.query;
     if (
         (typeof nexo_nsi !== "string" || !nexo_nsi)
@@ -150,5 +38,31 @@ app.get('/api', async (req, res, next) => {
         next(err);
     }
 });
+
+router.get('/simplicity', async (req, res, next) => {
+    try {
+        res.json(await simplicity());
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get('/ird', async (req, res, next) => {
+    try {
+        res.json(await ird());
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get('/investNow', async (req, res, next) => {
+    try {
+        res.json(await investNow());
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.use('/crypto', cryptoRoutes);
 
 app.listen(port, () => console.log(`App server listening on port ${port}!`));

@@ -1,19 +1,16 @@
 import axios from "axios";
-import { Coin, CoinInfo, CoinWithoutPrice } from "../types";
+import { Coin, MarketCoinInfo, CoinWithoutPrice } from "../types";
 import config from "../../config";
 import { GetMarketCoinsResponse } from "./types";
 
-export const getCoins = async (
-    coinsWithoutPrices: CoinWithoutPrice[],
-): Promise<Coin[]> => {
+export const getCoins = async (coinsWithoutPrices: CoinWithoutPrice[]): Promise<Coin[]> => {
     const coinInfos = await getCoinInfos(coinsWithoutPrices.map(coin => coin.id));
 
     const coins: Coin[] = [];
     coinsWithoutPrices.forEach(coinWithoutPrice => {
         const coinInfo = coinInfos.find(c => c.id === coinWithoutPrice.id);
         if (!coinInfo) {
-            // TODO update error message
-            throw new Error(`Unexpected error: marketCoin not found.\ncoinId=${coinWithoutPrice.id}\nmarketCoins=${JSON.stringify({ coinsWithoutPrices, coinInfos })}`);
+            throw new Error(`Invalid coinId: ${coinWithoutPrice.id}. Please correct the mapping in crypto/CoinId.ts`);
         }
 
         const coin: Coin = {
@@ -28,9 +25,9 @@ export const getCoins = async (
                 price: coinInfo.nzd,
                 value: coinInfo.nzd * coinWithoutPrice.amount,
             },
-        }
+        };
 
-        // Do not return coins with very small values
+        // Do not return coins with small values
         if (coin.usd.value > config.CRYPTO_MINIMUM_VALUE) {
             coins.push(coin);
         }
@@ -38,9 +35,9 @@ export const getCoins = async (
     return coins;
 }
 
-const getCoinInfos = async (symbols: string[]): Promise<CoinInfo[]> => {
-    const usdCoins = await getCoinGeckoPrices(symbols, "usd");
-    const nzdCoins = await getCoinGeckoPrices(symbols, "nzd");
+const getCoinInfos = async (ids: string[]): Promise<MarketCoinInfo[]> => {
+    const usdCoins = await getCoinGeckoPrices(ids, "usd");
+    const nzdCoins = await getCoinGeckoPrices(ids, "nzd");
 
     return usdCoins.map((usdCoin, index) => ({
         id: usdCoin.id,

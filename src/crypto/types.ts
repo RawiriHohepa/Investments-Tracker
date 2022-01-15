@@ -7,7 +7,7 @@ export type CoinWithoutPrice = {
     amount: number;
 }
 
-export type CoinInfo = {
+export type MarketCoinInfo = {
     id: string;
     symbol: string;
     name: string;
@@ -16,7 +16,7 @@ export type CoinInfo = {
 }
 
 export type Coin = {
-    coin: CoinInfo;
+    coin: MarketCoinInfo;
     platform: Platform;
     amount: number;
     usd: {

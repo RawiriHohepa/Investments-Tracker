@@ -5,14 +5,10 @@ import { GetAmountsResponse } from "./types";
 import CoinId from "../CoinId";
 import Platform from "../Platform";
 
-const kraken = async (): Promise<CoinWithoutPrice[]> => {
-    const unmappedAmounts = await getAmounts();
-    return mapAmounts(unmappedAmounts);
-}
+const kraken = async (): Promise<CoinWithoutPrice[]> => mapAmounts(await getAmounts());
 
 const mapAmounts = (unmappedAmounts: GetAmountsResponse): CoinWithoutPrice[] => {
-    // Map kraken coin symbols to market coin symbols
-    const uniqueAmounts: { [coin: string]: number; } = {};
+    const uniqueAmounts: { [coinId: string]: number } = {};
     const unrecognisedCoins: string[] = [];
     Object.keys(unmappedAmounts).forEach(krakenCoinName => {
         // Ignore coins with no amount
@@ -20,19 +16,19 @@ const mapAmounts = (unmappedAmounts: GetAmountsResponse): CoinWithoutPrice[] => 
             return;
         }
 
-        // Find corresponding market coin for given kraken coin
-        const marketCoinId = marketCoinMap[krakenCoinName];
-        if (!marketCoinId) {
+        // Find corresponding market coin
+        const coinId = marketCoinMap[krakenCoinName];
+        if (!coinId) {
             // Collate all unmapped coins to return in an Error
             unrecognisedCoins.push(krakenCoinName);
             return;
         }
 
-        if (!!uniqueAmounts[marketCoinId]) {
-            // Combine kraken coins that share the same market coin
-            uniqueAmounts[marketCoinId] = uniqueAmounts[marketCoinId] + parseFloat(unmappedAmounts[krakenCoinName]);
+        // Combine kraken coins that share the same market coin
+        if (!!uniqueAmounts[coinId]) {
+            uniqueAmounts[coinId] = uniqueAmounts[coinId] + parseFloat(unmappedAmounts[krakenCoinName]);
         } else {
-            uniqueAmounts[marketCoinId] = parseFloat(unmappedAmounts[krakenCoinName]);
+            uniqueAmounts[coinId] = parseFloat(unmappedAmounts[krakenCoinName]);
         }
     });
     if (unrecognisedCoins.length) {

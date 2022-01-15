@@ -3,4 +3,4 @@ export type KrakenResponse<Data> = {
     error: string[];
 }
 
-export type GetAmountsResponse = { [krakenCoinName: string]: string; };
+export type GetAmountsResponse = { [krakenCoinName: string]: string };
