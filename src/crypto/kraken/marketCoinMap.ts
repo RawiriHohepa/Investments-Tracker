@@ -1,6 +1,6 @@
 import CoinId from "../CoinId";
 
-const marketCoinMap: { [krakenCoinName: string]: CoinId; } = {
+const marketCoinMap: { [krakenCoinName: string]: CoinId } = {
     "AAVE": CoinId.AAVE,
     "ADA.S": CoinId.ADA,
     "ALGO": CoinId.ALGO,

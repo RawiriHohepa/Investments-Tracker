@@ -1,7 +1,11 @@
 import puppeteer from "puppeteer";
 import config from "../../../config";
 
-const getAda = async (): Promise<number> => {
+const getAmount = async (): Promise<number> => {
+    if (!process.env.CARDANOSCAN_STAKE_KEY) {
+        throw new Error("CARDANOSCAN_STAKE_KEY key not found in .env file");
+    }
+
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
     await page.setViewport({ width: 1920, height: 1080 });
@@ -17,4 +21,4 @@ const getAda = async (): Promise<number> => {
     return parseFloat(adaAmountString);
 }
 
-export default getAda;
+export default getAmount;

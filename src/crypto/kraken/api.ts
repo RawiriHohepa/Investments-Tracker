@@ -19,17 +19,21 @@ export const getAmounts = async (): Promise<GetAmountsResponse> => {
     const message = `nonce=${nonce}`;
     const signature = getMessageSignature(config.KRAKEN_API_BALANCES_ENDPOINT, { nonce }, process.env.KRAKEN_PRIVATE_KEY, nonce.toString());
 
-    const res = await axios.post<KrakenResponse<GetAmountsResponse>>("" + config.KRAKEN_API_URI + config.KRAKEN_API_BALANCES_ENDPOINT, message, {
-        headers: {
-            'API-Key': process.env.KRAKEN_API_KEY,
-            'API-Sign': signature,
+    const response = await axios.post<KrakenResponse<GetAmountsResponse>>(
+        `${config.KRAKEN_API_URI}${config.KRAKEN_API_BALANCES_ENDPOINT}`,
+        message,
+        {
+            headers: {
+                'API-Key': process.env.KRAKEN_API_KEY,
+                'API-Sign': signature,
+            },
         },
-    });
+    );
 
-    if (!!res.data.error.length) {
-        throw new Error(`Error(s) when calling Kraken API ${config.KRAKEN_API_BALANCES_ENDPOINT}: ${res.data.error.join("; ")}`)
+    if (!!response.data.error.length) {
+        throw new Error(`Error(s) when calling Kraken API ${config.KRAKEN_API_BALANCES_ENDPOINT}: ${response.data.error.join(";\n")}`);
     }
-    return res.data.result;
+    return response.data.result;
 }
 
 // From https://github.com/vdegenne/kraken-api-js/blob/master/_kraken.ts

@@ -1,4 +1,4 @@
-export type ErgoApiResponse = {
+export type GetAmountResponse = {
     "summary": {
         "id": string;
     },

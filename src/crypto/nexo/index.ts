@@ -1,44 +1,35 @@
 import { CoinWithoutPrice } from "../types";
-import axios from "axios";
 import {
-    GetBalancesResponse,
-    GetBalancesResponseBalances,
-    GetBalancesResponsePayload
+    GetAmountsResponseBalance,
+    GetAmountsResponse
 } from "./types";
-import config from "../../config";
 import Platform from "../Platform";
 import CoinId from "../CoinId";
+import getAmounts from "./api";
 
-const nexo = async (nsi: string): Promise<CoinWithoutPrice[]> => {
-    if (!process.env.NEXO_ZLCMID || !process.env.NEXO_CF_CLEARANCE) {
-        throw new Error("Environment Variables not set: NEXO_ZLCMID and/or NEXO_CF_CLEARANCE")
-    }
+const nexo = async (nsi: string): Promise<CoinWithoutPrice[]> => mapAmounts(await getAmounts(nsi));
 
-    const getBalancesResponse = await nexoApi(nsi);
-    return mapAmounts(getBalancesResponse);
-}
-
-const mapAmounts = (getBalancesResponse: GetBalancesResponsePayload): CoinWithoutPrice[] => {
+const mapAmounts = (unmappedAmounts: GetAmountsResponse): CoinWithoutPrice[] => {
     const coinsWithoutPrices: CoinWithoutPrice[] = [];
     const unrecognisedCoins: string[] = [];
-    getBalancesResponse.balances.forEach((balance: GetBalancesResponseBalances) => {
+    unmappedAmounts.balances.forEach((nexoCoin: GetAmountsResponseBalance) => {
         // Ignore coins with no amount
-        if (!balance.total_balance) {
+        if (!nexoCoin.total_balance) {
             return;
         }
 
-        // Find corresponding market coin for given nexo coin
-        const coinId: CoinId | undefined = CoinId[balance.currency_identity];
+        // Find corresponding market coin
+        const coinId: CoinId | undefined = CoinId[nexoCoin.currency_identity];
         if (!coinId) {
             // Collate all unmapped coins to return in an Error
-            unrecognisedCoins.push(balance.currency_identity);
+            unrecognisedCoins.push(nexoCoin.currency_identity);
             return;
         }
 
         coinsWithoutPrices.push({
             id: coinId,
             platform: Platform.NEXO,
-            amount: balance.total_balance,
+            amount: nexoCoin.total_balance,
         });
     });
     if (unrecognisedCoins.length) {
@@ -46,17 +37,6 @@ const mapAmounts = (getBalancesResponse: GetBalancesResponsePayload): CoinWithou
     }
 
     return coinsWithoutPrices;
-}
-
-const nexoApi = async (nsi: string): Promise<GetBalancesResponsePayload> => {
-    const cookie = `__zlcmid=${process.env.NEXO_ZLCMID}; cf_clearance=${process.env.NEXO_CF_CLEARANCE}; nsi=${nsi};`;
-    const url = "" + config.NEXO_API_URL + config.NEXO_API_BALANCES_ENDPOINT;
-    const res = await axios.post<GetBalancesResponse>(url, {}, {
-        headers: {
-            cookie
-        }
-    });
-    return res.data.payload;
 }
 
 export default nexo;

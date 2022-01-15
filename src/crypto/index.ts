@@ -8,11 +8,11 @@ import { getCoins } from "./prices";
 
 const router = express.Router();
 
-export const crypto = async (nexo_nsi: string, exodus_xmr_amount: number) => {
+export const crypto = async (nexoNsi: string, exodusXmrAmount: number) => {
     const coinsWithoutPrices = [
         ...await kraken(),
-        ...await nexo(nexo_nsi),
-        ...await exodus(exodus_xmr_amount),
+        ...await nexo(nexoNsi),
+        ...await exodus(exodusXmrAmount),
         ...await yoroi(),
         ...await terra(),
     ];
@@ -25,6 +25,7 @@ router.get('/', async (req, res, next) => {
         (typeof nexo_nsi !== "string" || !nexo_nsi)
         || (typeof exodus_xmr_amount !== "string" || !exodus_xmr_amount || isNaN(parseFloat(exodus_xmr_amount)))
     ) {
+        // TODO send more meaningful errors
         res.sendStatus(400);
         return;
     }
@@ -48,6 +49,7 @@ router.get('/kraken', async (req, res, next) => {
 router.get('/nexo', async (req, res, next) => {
     const { nsi } = req.query;
     if (typeof nsi !== "string" || !nsi) {
+        // TODO send more meaningful errors
         res.sendStatus(400);
         return;
     }
@@ -63,6 +65,7 @@ router.get('/nexo', async (req, res, next) => {
 router.get('/exodus', async (req, res, next) => {
     const { xmr_amount } = req.query;
     if (typeof xmr_amount !== "string" || !xmr_amount || isNaN(parseFloat(xmr_amount))) {
+        // TODO send more meaningful errors
         res.sendStatus(400);
         return;
     }

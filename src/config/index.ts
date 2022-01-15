@@ -16,6 +16,7 @@ const config = {
     CARDANOSCAN_URL: "https://cardanoscan.io/stakeKey",
 
     TERRA_API_URL: "https://fcd.terra.dev/v1/bank",
+    TERRA_AUST_API_URL: "https://mantle.terra.dev/",
 }
 
 export default config;
