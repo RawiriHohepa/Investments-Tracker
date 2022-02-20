@@ -1,5 +1,6 @@
-import puppeteer, { Page } from "puppeteer";
+import { Page } from "puppeteer";
 import config from "../config";
+import { scrapeWebpage } from "../utils";
 
 type Ird = {
   "Compulsory fees": number;
@@ -11,17 +12,12 @@ type Ird = {
 }
 
 const ird = async (): Promise<Ird> => {
-  const browser = await puppeteer.launch({ executablePath: process.env.PUPPETEER_EXECUTABLE_PATH });
-  const page = await browser.newPage();
-  await page.setViewport({ width: 1280, height: 800 });
-
-  await login(page);
-  await page.screenshot({ path: "src/ird/screenshot.png" });
-
-  const balances = await retrieveBalances(page);
-
-  await browser.close();
-  return balances;
+  return await scrapeWebpage<Ird>({
+    url: config.IRD_URL,
+    login,
+    screenshotPath: "src/ird/screenshot.png",
+    getBalances,
+  });
 };
 
 const login = async (page: Page) => {
@@ -30,8 +26,6 @@ const login = async (page: Page) => {
   const passwordId = "#password";
   const linksSelector = ".IconCaptionText";
   const studentLoanButtonId = "#caption2_Dm-i1-4";
-
-  await page.goto("" + config.IRD_URL);
 
   const myIrButton = await page.$(myIrButtonClass);
   await myIrButton?.click();
@@ -49,7 +43,7 @@ const login = async (page: Page) => {
   await page.waitForNavigation();
 }
 
-const retrieveBalances = async (page: Page): Promise<Ird> => {
+const getBalances = async (page: Page): Promise<Ird> => {
   const textSelector = ".FGNVV";
   const texts = await page.$$eval(
       textSelector,

@@ -1,20 +1,16 @@
-import puppeteer, { Page } from "puppeteer"
+import { Page } from "puppeteer"
 import getPasscode from "./getPasscode";
 import { InvestNow } from "./types";
 import config from "../config";
+import { scrapeWebpage } from "../utils";
 
 const investNow = async (): Promise<InvestNow> => {
-  const browser = await puppeteer.launch({ executablePath: process.env.PUPPETEER_EXECUTABLE_PATH });
-  const page = await browser.newPage();
-  await page.setViewport({ width: 1280, height: 800 });
-
-  await login(page);
-  await page.screenshot({ path: "src/investNow/screenshot.png" });
-
-  const balances = await getBalances(page);
-
-  await browser.close();
-  return balances;
+  return await scrapeWebpage<InvestNow>({
+    url: config.INVESTNOW_URL,
+    login,
+    screenshotPath: "src/investNow/screenshot.png",
+    getBalances,
+  });
 };
 
 const login = async (page: Page) => {
@@ -22,7 +18,6 @@ const login = async (page: Page) => {
   const passwordId = "#input_1";
   const passcodeId = "#input_3";
 
-  await page.goto("" + config.INVESTNOW_URL);
   await page.waitForSelector("input");
 
   await page.type(emailId, "" + process.env.INVESTNOW_EMAIL);

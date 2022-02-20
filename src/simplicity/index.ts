@@ -1,5 +1,6 @@
 import puppeteer, { Page } from "puppeteer";
 import config from "../config";
+import { scrapeWebpage } from "../utils";
 
 type Simplicity = {
   conservative?: number;
@@ -8,25 +9,18 @@ type Simplicity = {
 }
 
 const simplicity = async (): Promise<Simplicity> => {
-  const browser = await puppeteer.launch({ executablePath: process.env.PUPPETEER_EXECUTABLE_PATH });
-  const page = await browser.newPage();
-  await page.setViewport({ width: 1280, height: 800 });
-
-  await login(page);
-  await page.screenshot({ path: "src/simplicity/screenshot.png" });
-
-  const balances: Simplicity = await retrieveBalances(page);
-
-  await browser.close();
-  return balances;
+  return await scrapeWebpage<Simplicity>({
+    url: config.SIMPLICITY_URL,
+    login,
+    screenshotPath: "src/simplicity/screenshot.png",
+    getBalances,
+  });
 };
 
 const login = async (page: Page) => {
   const emailSelector = "[name=email]";
   const passwordSelector = "[name=password]";
   const balancesSelector = "h6";
-
-  await page.goto("" + config.SIMPLICITY_URL);
 
   await page.type(emailSelector, "" + process.env.SIMPLICITY_EMAIL);
   await page.type(passwordSelector, "" + process.env.SIMPLICITY_PASSWORD);
@@ -36,7 +30,7 @@ const login = async (page: Page) => {
   await page.waitForSelector(balancesSelector);
 }
 
-const retrieveBalances = async (page: Page): Promise<Simplicity> => {
+const getBalances = async (page: Page): Promise<Simplicity> => {
   const buttonTexts = await page.$$eval<string[]>(
       "button",
       buttons => (buttons.map(button => button.textContent))
