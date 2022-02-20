@@ -12,6 +12,13 @@ type Ird = {
 }
 
 const ird = async (): Promise<Ird> => {
+  if (!process.env.IRD_USERNAME) {
+    throw new Error("IRD_USERNAME key not found in .env file");
+  }
+  if (!process.env.IRD_PASSWORD) {
+    throw new Error("IRD_PASSWORD key not found in .env file");
+  }
+
   return await scrapeWebpage<Ird>({
     url: config.IRD_URL,
     login,

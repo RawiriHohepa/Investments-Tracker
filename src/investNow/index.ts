@@ -5,6 +5,13 @@ import config from "../config";
 import { scrapeWebpage } from "../utils";
 
 const investNow = async (): Promise<InvestNow> => {
+  if (!process.env.INVESTNOW_EMAIL) {
+    throw new Error("INVESTNOW_EMAIL key not found in .env file");
+  }
+  if (!process.env.INVESTNOW_PASSWORD) {
+    throw new Error("INVESTNOW_PASSWORD key not found in .env file");
+  }
+
   return await scrapeWebpage<InvestNow>({
     url: config.INVESTNOW_URL,
     login,

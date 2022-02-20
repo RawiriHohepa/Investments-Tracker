@@ -1,4 +1,4 @@
-import puppeteer, { Page } from "puppeteer";
+import { Page } from "puppeteer";
 import config from "../config";
 import { scrapeWebpage } from "../utils";
 
@@ -9,6 +9,13 @@ type Simplicity = {
 }
 
 const simplicity = async (): Promise<Simplicity> => {
+  if (!process.env.SIMPLICITY_EMAIL) {
+    throw new Error("SIMPLICITY_EMAIL key not found in .env file");
+  }
+  if (!process.env.SIMPLICITY_PASSWORD) {
+    throw new Error("SIMPLICITY_PASSWORD key not found in .env file");
+  }
+
   return await scrapeWebpage<Simplicity>({
     url: config.SIMPLICITY_URL,
     login,
