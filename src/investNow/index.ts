@@ -1,8 +1,8 @@
 import puppeteer, { Page } from 'puppeteer'
 import getPasscode from './getPasscode';
-import { InvestNow } from "../types/InvestNow";
+import { InvestNow } from "./types";
 
-const balances = async (): Promise<InvestNow> => {
+const investNow = async (): Promise<InvestNow> => {
   const browser = await puppeteer.launch({ executablePath: process.env.PUPPETEER_EXECUTABLE_PATH });
   const page = await browser.newPage();
 
@@ -65,4 +65,4 @@ const login = async (page: Page) => {
   await page.setViewport({ height: 1200, width: 1000 });
 }
 
-export default balances;
+export default investNow;

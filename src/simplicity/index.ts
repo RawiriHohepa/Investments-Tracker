@@ -1,7 +1,12 @@
 import puppeteer, { Page } from 'puppeteer'
-import { Simplicity } from '../types';
 
-const balances = async (): Promise<Simplicity> => {
+type Simplicity = {
+  conservative?: number;
+  growth?: number;
+  kiwisaver?: number;
+}
+
+const simplicity = async (): Promise<Simplicity> => {
   const browser = await puppeteer.launch({ executablePath: process.env.PUPPETEER_EXECUTABLE_PATH });
   const page = await browser.newPage();
 
@@ -53,4 +58,4 @@ const login = async (page: Page) => {
   await page.setViewport({ width: 1500, height: 1000 });
 }
 
-export default balances;
+export default simplicity;

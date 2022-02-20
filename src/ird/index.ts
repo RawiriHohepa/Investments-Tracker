@@ -1,7 +1,8 @@
 import puppeteer, { Page } from 'puppeteer';
-import { Ird } from "../types";
 
-const studentLoan = async (): Promise<Ird> => {
+type Ird = { [s: string]: number };
+
+const ird = async (): Promise<Ird> => {
   const browser = await puppeteer.launch({ executablePath: process.env.PUPPETEER_EXECUTABLE_PATH });
   const page = await browser.newPage();
 
@@ -60,4 +61,4 @@ const login = async (page: Page) => {
   await page.waitForNavigation();
 }
 
-export default studentLoan;
+export default ird;
