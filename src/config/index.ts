@@ -1,6 +1,7 @@
 const config = {
     SIMPLICITY_URL: "https://app.simplicity.kiwi/login",
     IRD_URL: "https://www.ird.govt.nz/",
+    INVESTNOW_URL: "https://secure.investnow.co.nz/#/login",
 
     CRYPTO_MINIMUM_VALUE: 0.01,
 

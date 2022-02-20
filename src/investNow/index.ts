@@ -1,57 +1,33 @@
-import puppeteer, { Page } from 'puppeteer'
-import getPasscode from './getPasscode';
+import puppeteer, { Page } from "puppeteer"
+import getPasscode from "./getPasscode";
 import { InvestNow } from "./types";
+import config from "../config";
 
 const investNow = async (): Promise<InvestNow> => {
   const browser = await puppeteer.launch({ executablePath: process.env.PUPPETEER_EXECUTABLE_PATH });
   const page = await browser.newPage();
+  await page.setViewport({ width: 1280, height: 800 });
 
   await login(page);
+  await page.screenshot({ path: "src/investNow/screenshot.png" });
 
-  await page.screenshot({ path: 'src/investNow/screenshot.png' });
-
-  const td = await page.$$eval('td', cells => (
-          cells.map(cell =>
-              cell.textContent
-          )
-      )
-  ) as unknown as string[];
-
-  // FIXME doesn't work with cash currently being processed
-  const balances: InvestNow = {};
-  balances[td[0]] = {
-    Name: td[1],
-    Qty: parseFloat(td[2].replace(",", "")),
-    Price: parseFloat(td[3].replace(",", "")),
-    Value: parseFloat(td[4].replace(",", "")),
-    FX: parseFloat(td[5].replace(",", "")),
-    NZD: parseFloat(td[6].replace(",", "")),
-  };
-
-  // balances[td[8]] = {
-  //   Name: td[9],
-  //   Qty: td[10],
-  //   Price: td[10],
-  //   Value: td[12],
-  //   FX: td[13],
-  //   NZD: td[14],
-  // };
+  const balances = await getBalances(page);
 
   await browser.close();
   return balances;
 };
 
 const login = async (page: Page) => {
-  const emailId = '#input_0';
-  const passwordId = '#input_1';
-  const passcodeId = '#input_3';
+  const emailId = "#input_0";
+  const passwordId = "#input_1";
+  const passcodeId = "#input_3";
 
-  await page.goto("" + process.env.INVESTNOW_URL);
-  await page.waitForSelector('input');
+  await page.goto("" + config.INVESTNOW_URL);
+  await page.waitForSelector("input");
 
   await page.type(emailId, "" + process.env.INVESTNOW_EMAIL);
   await page.type(passwordId, "" + process.env.INVESTNOW_PASSWORD);
-  await page.keyboard.press('Enter');
+  await page.keyboard.press("Enter");
 
   await page.waitForSelector(passcodeId);
 
@@ -59,10 +35,29 @@ const login = async (page: Page) => {
   await page.waitForTimeout(5000);
   const passcode = await getPasscode();
   await page.type(passcodeId, passcode);
-  await page.keyboard.press('Enter');
+  await page.keyboard.press("Enter");
 
-  await page.waitForSelector('td');
-  await page.setViewport({ height: 1200, width: 1000 });
+  await page.waitForSelector("td");
+}
+
+// FIXME doesn't see cash balance
+const getBalances = async (page: Page) => {
+  const cells = await page.$$eval(
+      "td",
+      cells => (cells.map(cell => cell.textContent)),
+  ) as unknown as string[];
+
+  const balances: InvestNow = {};
+  balances[cells[0]] = {
+    Name: cells[1],
+    Qty: parseFloat(cells[2].replace(",", "")),
+    Price: parseFloat(cells[3].replace(",", "")),
+    Value: parseFloat(cells[4].replace(",", "")),
+    FX: parseFloat(cells[5].replace(",", "")),
+    NZD: parseFloat(cells[6].replace(",", "")),
+  };
+
+  return balances;
 }
 
 export default investNow;
