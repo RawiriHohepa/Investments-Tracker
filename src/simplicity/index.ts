@@ -1,4 +1,5 @@
 import puppeteer, { Page } from "puppeteer";
+import config from "../config";
 
 type Simplicity = {
   conservative?: number;
@@ -13,6 +14,7 @@ const simplicity = async (): Promise<Simplicity> => {
 
   await login(page);
   await page.screenshot({ path: "src/simplicity/screenshot.png" });
+
   const balances: Simplicity = await retrieveBalances(page);
 
   await browser.close();
@@ -24,7 +26,7 @@ const login = async (page: Page) => {
   const passwordSelector = "[name=password]";
   const balancesSelector = "h6";
 
-  await page.goto("" + process.env.SIMPLICITY_URL);
+  await page.goto("" + config.SIMPLICITY_URL);
 
   await page.type(emailSelector, "" + process.env.SIMPLICITY_EMAIL);
   await page.type(passwordSelector, "" + process.env.SIMPLICITY_PASSWORD);
@@ -37,9 +39,7 @@ const login = async (page: Page) => {
 const retrieveBalances = async (page: Page): Promise<Simplicity> => {
   const buttonTexts = await page.$$eval<string[]>(
       "button",
-      buttons => (
-          buttons.map(button => button.textContent)
-      )
+      buttons => (buttons.map(button => button.textContent))
   ) as unknown as string[];
 
   const values = buttonTexts
