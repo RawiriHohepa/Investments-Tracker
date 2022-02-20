@@ -1,4 +1,4 @@
-import puppeteer, { Page } from 'puppeteer'
+import puppeteer, { Page } from "puppeteer";
 
 type Simplicity = {
   conservative?: number;
@@ -9,53 +9,51 @@ type Simplicity = {
 const simplicity = async (): Promise<Simplicity> => {
   const browser = await puppeteer.launch({ executablePath: process.env.PUPPETEER_EXECUTABLE_PATH });
   const page = await browser.newPage();
+  await page.setViewport({ width: 1280, height: 800 });
 
   await login(page);
-
-  // FIXME For some reason this is needed for all three balances to be scraped successfully.
-  await page.screenshot({ path: 'src/simplicity/screenshot.png' });
-
-  const buttonTexts = await page.$$eval(
-      'button',
-      buttons => (
-        buttons.map(button =>
-          button.textContent
-        )
-      )
-  ) as unknown as string[];
-
-  const values = buttonTexts
-    .slice(3) // Remove unnecessary buttons
-    .map(value =>
-      value
-        .split("$")[1] // Remove account type
-        .replace(" ", "") // Remove space after decimal point
-    );
-
-  const [kiwisaver, growth, conservative] = values;
-  const balances = {
-    kiwisaver: kiwisaver ? parseFloat(kiwisaver.replace(",", "")) : undefined,
-    growth: growth ? parseFloat(growth.replace(",", "")) : undefined,
-    conservative: conservative ? parseFloat(conservative.replace(",", "")) : undefined,
-  }
+  await page.screenshot({ path: "src/simplicity/screenshot.png" });
+  const balances: Simplicity = await retrieveBalances(page);
 
   await browser.close();
   return balances;
 };
 
 const login = async (page: Page) => {
-  const emailSelector = '[name=email]';
-  const passwordSelector = '[name=password]';
+  const emailSelector = "[name=email]";
+  const passwordSelector = "[name=password]";
+  const balancesSelector = "h6";
 
   await page.goto("" + process.env.SIMPLICITY_URL);
 
   await page.type(emailSelector, "" + process.env.SIMPLICITY_EMAIL);
   await page.type(passwordSelector, "" + process.env.SIMPLICITY_PASSWORD);
-  await page.keyboard.press('Enter');
+  await page.keyboard.press("Enter");
 
   await page.waitForNavigation();
-  await page.waitForSelector('h6');
-  await page.setViewport({ width: 1500, height: 1000 });
+  await page.waitForSelector(balancesSelector);
+}
+
+const retrieveBalances = async (page: Page): Promise<Simplicity> => {
+  const buttonTexts = await page.$$eval<string[]>(
+      "button",
+      buttons => (
+          buttons.map(button => button.textContent)
+      )
+  ) as unknown as string[];
+
+  const values = buttonTexts
+      .slice(3) // Remove unnecessary buttons
+      .map(value =>
+          parseFloat(value
+              .split("$")[1] // Remove account type
+              .replace(" ", "") // Remove space after decimal point
+              .replace(",", "") // Remove comma
+          )
+      );
+
+  const [kiwisaver, growth, conservative] = values;
+  return { kiwisaver, growth, conservative };
 }
 
 export default simplicity;
