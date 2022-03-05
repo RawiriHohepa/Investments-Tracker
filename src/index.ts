@@ -1,9 +1,9 @@
 import express from 'express'
 require('dotenv').config();
 
-import simplicity from './simplicity/balances';
-import ird from './ird/studentLoan';
-import investNow from './investNow/balances';
+import simplicity from './simplicity';
+import ird from './ird';
+import investNow from './investNow';
 import cryptoRoutes, { crypto } from "./crypto";
 
 // Setup Express
