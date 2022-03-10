@@ -5,6 +5,7 @@ import exodus from "./exodus";
 import yoroi from "./yoroi";
 import terra from "./terra";
 import { getCoins } from "./prices";
+import celsius from "./celsius";
 
 const router = express.Router();
 
@@ -12,6 +13,7 @@ export const crypto = async (nexoNsi: string, exodusXmrAmount: number) => {
     const coinsWithoutPrices = [
         ...await kraken(),
         ...await nexo(nexoNsi),
+        ...await celsius(),
         ...await exodus(exodusXmrAmount),
         ...await yoroi(),
         ...await terra(),
@@ -56,6 +58,15 @@ router.get('/nexo', async (req, res, next) => {
 
     try {
         const coinsWithoutPrices = await nexo(nsi);
+        res.json(await getCoins(coinsWithoutPrices));
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get('/celsius', async (req, res, next) => {
+    try {
+        const coinsWithoutPrices = await celsius();
         res.json(await getCoins(coinsWithoutPrices));
     } catch (err) {
         next(err);

@@ -16,6 +16,9 @@ const config = {
     NEXO_API_URL: "https://platform.nexo.io/api/1",
     NEXO_API_BALANCES_ENDPOINT: "/get_balances",
 
+    CELSIUS_API_URL: "https://wallet-api.celsius.network",
+    CELSIUS_BALANCES_ENDPOINT: "/wallet/balance/",
+
     ERGO_API_URL: "https://api.ergoplatform.com/addresses",
     CARDANOSCAN_URL: "https://cardanoscan.io/stakeKey",
 
