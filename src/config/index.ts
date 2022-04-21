@@ -20,7 +20,7 @@ const config = {
     CELSIUS_BALANCES_ENDPOINT: "/wallet/balance/",
 
     ERGO_API_URL: "https://api.ergoplatform.com/addresses",
-    CARDANOSCAN_URL: "https://cardanoscan.io/stakeKey",
+    CARDANO_API_URL: "https://graphql-api.mainnet.dandelion.link",
 
     TERRA_API_URL: "https://fcd.terra.dev/v1/bank",
     TERRA_AUST_API_URL: "https://mantle.terra.dev/",

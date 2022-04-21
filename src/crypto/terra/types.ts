@@ -1,7 +1,7 @@
 export type GetAUstAmountResponse =
     | {
     data: {
-        [tokenAddr: string]: {
+        Response: {
             Result: `{\"balance\":\"${number}\"}`;
         };
     };
